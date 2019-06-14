@@ -1,8 +1,16 @@
 
 import java.util.Scanner;
 
-public class ExecutaJogo {
+public class ExecutaJogo implements Runnable {
+
+    Interface UI = new Interface();
+
     public static void main(String[] args) {
+        new Thread( new ExecutaJogo() ).start();
+    }
+
+    @Override
+    public void run(){
 
         Scanner sc = new Scanner(System.in);
         Baralho baralho = new Baralho(true);
@@ -41,26 +49,31 @@ public class ExecutaJogo {
             boolean dealerAcabou = false;
             String resp;
 
-            while (!euAcabei || !dealerAcabou) {
+            while ((!euAcabei || !dealerAcabou) && !endGame) {
                 if(!euAcabei) {
-                    System.out.print("Pegar Carta (P), Ficar (F), Abandonar (A) ou Dobrar Aposta(D)? ");
-                    resp = sc.next();
-                    System.out.println();
 
-                    if(resp.compareToIgnoreCase("P") == 0) {
-                        euAcabei = !eu.addCarta(baralho.entregaCarta());
-                        eu.imprimeMao(true);
-                    } else if(resp.compareToIgnoreCase("F") == 0){
-                        euAcabei = true;
-                    } else if (resp.compareToIgnoreCase("A") == 0){
-                        eu.abandonarPartida(dealer);
-                        endGame = true;
-                        break;
-                    } else if (resp.compareToIgnoreCase("D") == 0){
-                        euAcabei = !eu.addCarta(baralho.entregaCarta());
-                        eu.dobraAposta();
-                        eu.imprimeMao(true);
+                    switch (UI.getReturnButton()) {
+                        case "pegar":
+                            euAcabei = !eu.addCarta(baralho.entregaCarta());
+                            eu.imprimeMao(true);
+                            break;
+                        case "ficar":
+                            euAcabei = true;
+                            break;
+                        case "abandonar":
+                            eu.abandonarPartida(dealer);
+                            endGame = true;
+                            break;
+                        case "desistir":
+                            eu.dobraAposta();
+                            euAcabei = !eu.addCarta(baralho.entregaCarta());
+                            eu.imprimeMao(true);
+                            break;
+                        default:
+                            continue;
                     }
+
+                    UI.resetReturn();
                 }
 
                 if(!dealerAcabou) {
@@ -96,22 +109,28 @@ public class ExecutaJogo {
                 }
             }
 
-            String playAgain;
-
             System.out.printf("Saldo %s: %d", eu.getNome(), eu.getCreditos());
             System.out.println();
             System.out.printf("Saldo %s: %d", dealer.getNome(), dealer.getCreditos());
             System.out.println();
-            System.out.print("Deseja jogar novamente? (S ou N) ");
-            playAgain = sc.next();
-            switch (playAgain) {
-                case "S":
-                    endGame = false;
-                    break;
-                case "N":
-                    endGame = true;
-                    break;
-            }
+            System.out.print("Deseja jogar novamente? (S ou N)\n");
+            boolean exitLoop = false;
+            do {
+                switch(UI.playAgain()) {
+                    case "S":
+                        endGame = false;
+                        exitLoop = true;
+                        UI.resetPlayAgain();
+                        break;
+                    case "N":
+                        endGame = true;
+                        exitLoop = true;
+                        UI.resetPlayAgain();
+                        break;
+                    default:
+                        break;
+                }
+            } while (!exitLoop);
         }
 
     }
