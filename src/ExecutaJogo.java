@@ -5,65 +5,113 @@ public class ExecutaJogo {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        Baralho baralho = new Baralho(1, true);
+        Baralho baralho = new Baralho(true);
+        String nome;
+        int creditos;
 
-        Jogador eu = new Jogador("Camilo");
-        Jogador dealer = new Jogador("Dealer");
+        System.out.print("Digite o seu nome: ");
+        nome = sc.next();
+        System.out.print("Digite a quantidade de fichas irá comprar: ");
+        creditos = sc.nextInt();
 
-        eu.addCarta(baralho.entregaCarta());
-        dealer.addCarta(baralho.entregaCarta());
-        eu.addCarta(baralho.entregaCarta());
-        dealer.addCarta(baralho.entregaCarta());
+        Jogador eu = new Jogador(nome, creditos);
+        Jogador dealer = new Jogador("Dealer", 0);
 
-        System.out.println("Cartas distribuidas!");
-        eu.imprimeMao(true);
-        dealer.imprimeMao(false);
-        System.out.println("\n");
+        boolean endGame = false;
 
-        boolean euAcabei = false;
-        boolean dealerAcabou = false;
-        String resp;
+        while(!endGame) {
 
-        while (!euAcabei || !dealerAcabou) {
-            if(!euAcabei) {
-                System.out.print("Pegar ou Ficar? (Digite P ou F): ");
-                resp = sc.next();
+            eu.esvaziaMao();
+            dealer.esvaziaMao();
+
+            eu.addCarta(baralho.entregaCarta());
+            dealer.addCarta(baralho.entregaCarta());
+            eu.addCarta(baralho.entregaCarta());
+            dealer.addCarta(baralho.entregaCarta());
+
+            System.out.printf("Qual será sua aposta? (Créditos: %d) : ", eu.getCreditos());
+            eu.setAposta(sc.nextInt());
+
+            System.out.println("Cartas distribuidas!");
+            eu.imprimeMao(true);
+            dealer.imprimeMao(false);
+            System.out.println("\n");
+
+            boolean euAcabei = false;
+            boolean dealerAcabou = false;
+            String resp;
+
+            while (!euAcabei || !dealerAcabou) {
+                if(!euAcabei) {
+                    System.out.print("Pegar Carta (P), Ficar (F), Abandonar (A) ou Dobrar Aposta(D)? ");
+                    resp = sc.next();
+                    System.out.println();
+
+                    if(resp.compareToIgnoreCase("P") == 0) {
+                        euAcabei = !eu.addCarta(baralho.entregaCarta());
+                        eu.imprimeMao(true);
+                    } else if(resp.compareToIgnoreCase("F") == 0){
+                        euAcabei = true;
+                    } else if (resp.compareToIgnoreCase("A") == 0){
+                        eu.abandonarPartida(dealer);
+                        endGame = true;
+                        break;
+                    } else if (resp.compareToIgnoreCase("D") == 0){
+                        euAcabei = !eu.addCarta(baralho.entregaCarta());
+                        eu.dobraAposta();
+                        eu.imprimeMao(true);
+                    }
+                }
+
+                if(!dealerAcabou) {
+                    if(dealer.somaMao(true) < 17) {
+                        System.out.println("O Dealer pegou\n");
+                        dealerAcabou = !dealer.addCarta(baralho.entregaCarta());
+                        dealer.imprimeMao(false);
+                    } else {
+                        System.out.println("O Dealer fica\n");
+                        dealerAcabou = true;
+                    }
+                }
+
                 System.out.println();
+            }
 
-                if(resp.compareToIgnoreCase("P") == 0) {
-                    euAcabei = !eu.addCarta(baralho.entregaCarta());
-                    eu.imprimeMao(true);
+            if(!endGame) {
+                eu.imprimeMao(true);
+                dealer.imprimeMao(true);
+
+                int minhaSoma = eu.somaMao(true);
+                int somaDealer = dealer.somaMao(true);
+
+                if (minhaSoma > somaDealer && minhaSoma <= 21 || somaDealer > 21) {
+                    eu.ganharAposta(dealer);
+                    System.out.println("Você ganhou!");
+                } else if (minhaSoma == somaDealer) {
+                    eu.setAposta(0);
+                    System.out.println("Empate!");
                 } else {
-                    euAcabei = true;
+                    eu.perderAposta(dealer);
+                    System.out.println("O dealer ganhou!");
                 }
             }
 
-            if(!dealerAcabou) {
-                if(dealer.somaMao() < 17) {
-                    System.out.println("O Dealer pegou\n");
-                    dealerAcabou = !dealer.addCarta(baralho.entregaCarta());
-                    dealer.imprimeMao(false);
-                } else {
-                    System.out.println("O Dealer fica\n");
-                    dealerAcabou = true;
-                }
-            }
+            String playAgain;
 
+            System.out.printf("Saldo %s: %d", eu.getNome(), eu.getCreditos());
             System.out.println();
-        }
-
-        sc.close();
-
-        eu.imprimeMao(true);
-        dealer.imprimeMao(true);
-
-        int minhaSoma = eu.somaMao();
-        int somaDealer = dealer.somaMao();
-
-        if (minhaSoma > somaDealer && minhaSoma <= 21 || somaDealer > 21) {
-            System.out.println("Você ganhou!");
-        } else {
-            System.out.println("O dealer ganhou!");
+            System.out.printf("Saldo %s: %d", dealer.getNome(), dealer.getCreditos());
+            System.out.println();
+            System.out.print("Deseja jogar novamente? (S ou N) ");
+            playAgain = sc.next();
+            switch (playAgain) {
+                case "S":
+                    endGame = false;
+                    break;
+                case "N":
+                    endGame = true;
+                    break;
+            }
         }
 
     }

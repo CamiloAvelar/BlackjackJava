@@ -6,8 +6,41 @@ public class Jogador {
 
     private int numeroCartas;
 
-    public Jogador(String nome) {
+    private int creditos;
+
+    private int aposta;
+
+    public void setAposta(int aposta) {
+        this.aposta = aposta;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void dobraAposta() {
+        this.aposta *= 2;
+    }
+
+    public void abandonarPartida(Jogador dealer) {
+        int aposta = this.aposta/2;
+        this.creditos -= aposta;
+        dealer.setCreditos(dealer.getCreditos() + aposta);
+    }
+
+    public void ganharAposta(Jogador perdedor) {
+        this.creditos += this.aposta;
+        perdedor.setCreditos(perdedor.getCreditos() - this.aposta);
+    }
+
+    public void perderAposta(Jogador ganhador) {
+        this.creditos -= this.aposta;
+        ganhador.setCreditos(ganhador.getCreditos() + this.aposta);
+    }
+
+    public Jogador(String nome, int creditos) {
         this.nome = nome;
+        this.creditos = creditos;
 
         this.esvaziaMao();
     }
@@ -28,16 +61,20 @@ public class Jogador {
         this.mao[this.numeroCartas] = carta;
         this.numeroCartas++;
 
-        return (this.somaMao() <= 21);
+        return (this.somaMao(true) <= 21);
     }
 
-    public int somaMao() {
+    public int somaMao(boolean somaPrimeiraCarta) {
         int somaMao = 0;
         int numeroCarta;
         int numeroAs = 0;
 
         for(int c = 0; c < this.numeroCartas; c++) {
             numeroCarta = this.mao[c].getNumero();
+
+            if(!somaPrimeiraCarta && c == 0) {
+                numeroCarta = 0;
+            }
 
             if(numeroCarta == 1) {
                 numeroAs++;
@@ -67,5 +104,14 @@ public class Jogador {
                 System.out.printf(" %s\n", this.mao[c].toString());
             }
         }
+        System.out.printf("Total: %d\n", this.somaMao(mostraPrimeiraCarta));
+    }
+
+    public int getCreditos() {
+        return creditos;
+    }
+
+    public void setCreditos(int creditos) {
+        this.creditos = creditos;
     }
 }

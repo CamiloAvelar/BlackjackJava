@@ -5,26 +5,19 @@ public class Baralho {
     private Carta[] cartas;
     private int numeroCartas;
 
-    public Baralho() {
-        this(1,false);
-    }
-
-    public Baralho(int numBaralhos, boolean embaralhar) {
-        this.numeroCartas = numBaralhos * 52;
+    public Baralho(boolean embaralhar) {
+        this.numeroCartas = 52;
         this.cartas = new Carta[this.numeroCartas];
 
         int indexCarta = 0;
 
-        for (int baralho = 0; baralho < numBaralhos; baralho++) {
+        for(int naipe = 0; naipe < 4; naipe++){
 
-            for(int naipe = 0; naipe < 4; naipe++){
+            for(int numero = 1; numero <= 13; numero++) {
 
-                for(int numero = 1; numero <= 13; numero++) {
+                this.cartas[indexCarta] = new Carta(Naipes.values()[naipe], numero);
+                indexCarta++;
 
-                    this.cartas[indexCarta] = new Carta(Naipes.values()[naipe], numero);
-                    indexCarta++;
-
-                }
             }
         }
 
@@ -54,7 +47,7 @@ public class Baralho {
         Carta topo = this.cartas[0];
 
         // move todas as cartas para a esquerda
-        for (int c = 1; c< this.numeroCartas; c++) {
+        for (int c = 1; c < this.numeroCartas; c++) {
             this.cartas[c-1] = this.cartas[c];
         }
 
