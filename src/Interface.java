@@ -1,23 +1,52 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
 import java.awt.*;
+import java.util.*;
 
 public class Interface extends JFrame {
 
     int width = 1280;
     int height = 800;
 
+    int gridX = 50;
+    int gridY = 50;
+    int gridW = 900;
+    int gridH = 400;
+
+    private static String playerName;
+
+    private static boolean showTotal = false;
+    private static int myTotal;
+    private static int dealerTotal;
+
+    private static int meuSaldo;
+    private static int dealerSaldo;
+
+    private static int aposta;
+
+    private static Carta[] myCards;
+    private static Carta[] dealerCards;
+    private static int myCardsQtd;
+    private static int dealerCardsQtd;
+    private static boolean displayCards = false;
+    private static boolean showFirstCard = false;
+
     private static String returnButton = "none";
     private static String playAgain = "none";
 
     Board board = new Board();
 
+    ArrayList<Message> Log = new ArrayList<Message>();
+
     Color backgroundColor = new Color(39, 119,20);
     Color buttonColor = new Color(204,204,0);
+    Color cDealer = Color.red;
+    Color cPlayer = new Color(25,55,255);
 
+    Font fontCard = new Font("Times New Roman", Font.PLAIN, 40);
     Font buttonFont = new Font("Times New Roman", Font.PLAIN, 30);
+    Font fontLog = new Font("Times New Roman", Font.ITALIC, 30);
 
     JButton pegar = new JButton();
     pegarAction pegarAct = new pegarAction();
@@ -37,6 +66,17 @@ public class Interface extends JFrame {
     JButton nao = new JButton();
     naoAction naoAct = new naoAction();
 
+    int[] polyX = new int[4];
+    int[] polyY = new int[4];
+
+    //card spacing and dimensions
+    int spacing = 10;
+    int rounding = 10;
+    int tCardW = (int) gridW/6;
+    int tCardH = (int) gridH/2;
+    int cardW = tCardW - spacing*2;
+    int cardH = tCardH - spacing*2;
+
 
     public Interface() {
         this.setSize(width, height + 29);
@@ -49,28 +89,28 @@ public class Interface extends JFrame {
         this.setLayout(null);
 
         pegar.addActionListener(pegarAct);
-        pegar.setBounds(400, 400,150,80);
+        pegar.setBounds(1000, 400,150,80);
         pegar.setFont(buttonFont);
         pegar.setBackground(buttonColor);
         pegar.setText("PEGAR");
         board.add(pegar);
 
         ficar.addActionListener(ficarAct);
-        ficar.setBounds(550, 400,150,80);
+        ficar.setBounds(1150, 400,150,80);
         ficar.setFont(buttonFont);
         ficar.setBackground(buttonColor);
         ficar.setText("FICAR");
         board.add(ficar);
 
         abandonar.addActionListener(abandonarAct);
-        abandonar.setBounds(700, 400,150,80);
+        abandonar.setBounds(1000, 490,150,80);
         abandonar.setFont(buttonFont);
         abandonar.setBackground(buttonColor);
         abandonar.setText("ABANDONAR");
         board.add(abandonar);
 
         dobrar.addActionListener(dobrarAct);
-        dobrar.setBounds(850, 400,150,80);
+        dobrar.setBounds(1150, 490,150,80);
         dobrar.setFont(buttonFont);
         dobrar.setBackground(buttonColor);
         dobrar.setText("DOBRAR");
@@ -89,6 +129,49 @@ public class Interface extends JFrame {
         nao.setBackground(buttonColor);
         nao.setText("NAO");
         board.add(nao);
+
+        this.disableAllButtons();
+    }
+
+    public String openModal(String modalType) {
+        JPanel p=new JPanel(new GridLayout(1, 2, 10, 10));
+        p.setPreferredSize(new Dimension(100, 20));
+        JTextField t = new JTextField();
+
+        p.add(t);
+
+        int option;
+        String text = "";
+
+        switch (modalType) {
+            case "nome":
+                option = JOptionPane.showConfirmDialog(null,p,"Nome:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+                if(option==0){
+                    text = t.getText();
+                    Interface.playerName = text;
+                }else{
+                    System.exit(0);
+                }
+                break;
+            case "fichas":
+                option = JOptionPane.showConfirmDialog(null,p,"Fichas:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+                if(option==0){
+                    text = t.getText();
+                }else{
+                    System.exit(0);
+                }
+                break;
+            case "aposta":
+                option = JOptionPane.showConfirmDialog(null,p,"Qual será sua aposta:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+                if(option==0){
+                    text = t.getText();
+                }else{
+                    System.exit(0);
+                }
+                break;
+        }
+
+        return text;
     }
 
     public void disablePegar() {
@@ -111,10 +194,212 @@ public class Interface extends JFrame {
         return Interface.playAgain;
     }
 
+    public void disableAllButtons() {
+        pegar.setVisible(false);
+        ficar.setVisible(false);
+        dobrar.setVisible(false);
+        abandonar.setVisible(false);
+        sim.setVisible(false);
+        nao.setVisible(false);
+    }
+
+    public void disableActionButtons() {
+        pegar.setVisible(false);
+        ficar.setVisible(false);
+        dobrar.setVisible(false);
+        abandonar.setVisible(false);
+    }
+
+    public void enableActionButtons() {
+        pegar.setVisible(true);
+        ficar.setVisible(true);
+        dobrar.setVisible(true);
+        abandonar.setVisible(true);
+        repaint();
+    }
+
+    public void disablePlayAgainButtons() {
+        sim.setVisible(false);
+        nao.setVisible(false);
+    }
+
+    public void enablePlayAgainButtons() {
+        sim.setVisible(true);
+        nao.setVisible(true);
+        repaint();
+    }
+
+    public void log(String message, String who) {
+        Log.add(new Message(message, who));
+
+        repaint();
+    }
+
+    public void showTotal(int myTotal, int dealerTotal, int meuSaldo, int dealerSaldo, int aposta) {
+        Interface.showTotal = true;
+        Interface.myTotal = myTotal;
+        Interface.dealerTotal = dealerTotal;
+
+        Interface.meuSaldo = meuSaldo;
+        Interface.dealerSaldo = dealerSaldo;
+
+        Interface.aposta = aposta;
+        repaint();
+    }
+
+    public void displayCards(Jogador eu, Jogador dealer, boolean showFirstCard) {
+        Interface.myCards = eu.getMao();
+        Interface.dealerCards = dealer.getMao();
+
+        Interface.myCardsQtd = eu.getNumeroCartas();
+        Interface.dealerCardsQtd = dealer.getNumeroCartas();
+
+        Interface.displayCards = true;
+        Interface.showFirstCard = showFirstCard;
+        repaint();
+    }
+
+    public void hideCards() {
+        Interface.displayCards = false;
+    }
+
     public class Board extends JPanel {
         public void paintComponent(Graphics g) {
             g.setColor(backgroundColor);
             g.fillRect(0, 0, width, height);
+
+            // WRITE LOGS
+            g.setFont(fontLog);
+            int logIndex = 0;
+            for (Message L : Log) {
+                if (L.getWho().equalsIgnoreCase("Dealer")) {
+                    g.setColor(cDealer);
+                } else {
+                    g.setColor(cPlayer);
+                }
+                g.drawString(L.getMessage(), gridX+20, gridY+480+logIndex*35);
+                logIndex++;
+            }
+
+            if(Interface.showTotal) {
+                g.drawString("Pontos:", gridX+gridW+50, gridY+290);
+                g.drawString(Interface.playerName, gridX+gridW+50, gridY+320);
+                g.drawString("Dealer", gridX+gridW+210, gridY+320);
+                g.drawString(Integer.toString(Interface.myTotal), gridX+gridW+50, gridY+350);
+                g.drawString(Integer.toString(Interface.dealerTotal), gridX+gridW+210, gridY+350);
+
+                g.drawString("Saldo:", gridX+gridW+50, gridY+590);
+                g.drawString(Interface.playerName, gridX+gridW+50, gridY+620);
+                g.drawString("Dealer", gridX+gridW+210, gridY+620);
+                g.drawString(Integer.toString(Interface.meuSaldo), gridX+gridW+50, gridY+650);
+                g.drawString(Integer.toString(Interface.dealerSaldo), gridX+gridW+210, gridY+650);
+
+                g.drawString("Aposta:", gridX+gridW+50, gridY+700);
+                g.drawString(Integer.toString(Interface.aposta), gridX+gridW+180, gridY+700);
+            }
+
+            if(Interface.displayCards) {
+                //player cards
+                for (int i = 0; i < Interface.myCardsQtd; i++) {
+                    g.setColor(Color.white);
+                    g.fillRect(gridX+spacing+tCardW*i+rounding, gridY+spacing, cardW-rounding*2, cardH);
+                    g.fillRect(gridX+spacing+tCardW*i, gridY+spacing+rounding, cardW, cardH-rounding*2);
+                    g.fillOval(gridX+spacing+tCardW*i, gridY+spacing, rounding*2, rounding*2);
+                    g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2, rounding*2, rounding*2);
+                    g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing, rounding*2, rounding*2);
+                    g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2, rounding*2, rounding*2);
+
+                    g.setFont(fontCard);
+                    if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Copas") || Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
+                        g.setColor(Color.red);
+                    } else {
+                        g.setColor(Color.black);
+                    }
+
+                    g.drawString(Interface.myCards[i].getName(), gridX+spacing+tCardW*i+rounding, gridY+spacing+cardH-rounding);
+
+                    if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Copas")) {
+                        g.fillOval(gridX+tCardW*i+42, gridY+70, 35, 35);
+                        g.fillOval(gridX+tCardW*i+73, gridY+70, 35, 35);
+                        g.fillArc(gridX+tCardW*i+30, gridY+90, 90, 90, 51, 78);
+                    } else if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
+                        polyX[0] = gridX+tCardW*i+75;
+                        polyX[1] = gridX+tCardW*i+50;
+                        polyX[2] = gridX+tCardW*i+75;
+                        polyX[3] = gridX+tCardW*i+100;
+                        polyY[0] = gridY+60;
+                        polyY[1] = gridY+100;
+                        polyY[2] = gridY+140;
+                        polyY[3] = gridY+100;
+                        g.fillPolygon(polyX, polyY, 4);
+                    } else if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Espadas")) {
+                        g.fillOval(gridX+tCardW*i+42, gridY+90, 35, 35);
+                        g.fillOval(gridX+tCardW*i+73, gridY+90, 35, 35);
+                        g.fillArc(gridX+tCardW*i+30, gridY+15, 90, 90, 51+180, 78);
+                        g.fillRect(gridX+tCardW*i+70, gridY+100, 10, 40);
+                    } else {
+                        g.fillOval(gridX+tCardW*i+40, gridY+90, 35, 35);
+                        g.fillOval(gridX+tCardW*i+75, gridY+90, 35, 35);
+                        g.fillOval(gridX+tCardW*i+58, gridY+62, 35, 35);
+                        g.fillRect(gridX+tCardW*i+70, gridY+75, 10, 70);
+                    }
+                }
+                 //dealer cards
+                for (int i = 0; i < Interface.dealerCardsQtd; i++) {
+                    if(i == 0 && !Interface.showFirstCard) {
+                        g.setColor(Color.black);
+                        g.fillRect(gridX+spacing+tCardW*i+rounding, gridY+spacing+200, cardW-rounding*2, cardH);
+                        g.fillRect(gridX+spacing+tCardW*i, gridY+spacing+rounding+200, cardW, cardH-rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+200, rounding*2, rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+200, rounding*2, rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
+                    } else {
+                        g.setColor(Color.white);
+                        g.fillRect(gridX+spacing+tCardW*i+rounding, gridY+spacing+200, cardW-rounding*2, cardH);
+                        g.fillRect(gridX+spacing+tCardW*i, gridY+spacing+rounding+200, cardW, cardH-rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+200, rounding*2, rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+200, rounding*2, rounding*2);
+                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
+
+                        g.setFont(fontCard);
+                        if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Copas") || Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
+                            g.setColor(Color.red);
+                        } else {
+                            g.setColor(Color.black);
+                        }
+
+                        g.drawString(Interface.dealerCards[i].getName(), gridX+spacing+tCardW*i+rounding, gridY+spacing+cardH-rounding+200);
+
+                        if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Copas")) {
+                            g.fillOval(gridX+tCardW*i+42, gridY+70+200, 35, 35);
+                            g.fillOval(gridX+tCardW*i+73, gridY+70+200, 35, 35);
+                            g.fillArc(gridX+tCardW*i+30, gridY+90+200, 90, 90, 51, 78);
+                        } else if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
+                            polyX[0] = gridX+tCardW*i+75;
+                            polyX[1] = gridX+tCardW*i+50;
+                            polyX[2] = gridX+tCardW*i+75;
+                            polyX[3] = gridX+tCardW*i+100;
+                            polyY[0] = gridY+60+200;
+                            polyY[1] = gridY+100+200;
+                            polyY[2] = gridY+140+200;
+                            polyY[3] = gridY+100+200;
+                            g.fillPolygon(polyX, polyY, 4);
+                        } else if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Espadas")) {
+                            g.fillOval(gridX+tCardW*i+42, gridY+90+200, 35, 35);
+                            g.fillOval(gridX+tCardW*i+73, gridY+90+200, 35, 35);
+                            g.fillArc(gridX+tCardW*i+30, gridY+15+200, 90, 90, 51+180, 78);
+                            g.fillRect(gridX+tCardW*i+70, gridY+100+200, 10, 40);
+                        } else {
+                            g.fillOval(gridX+tCardW*i+40, gridY+90+200, 35, 35);
+                            g.fillOval(gridX+tCardW*i+75, gridY+90+200, 35, 35);
+                            g.fillOval(gridX+tCardW*i+58, gridY+62+200, 35, 35);
+                            g.fillRect(gridX+tCardW*i+70, gridY+75+200, 10, 70);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -154,7 +439,9 @@ public class Interface extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            Log.clear();
             Interface.playAgain = "S";
+            repaint();
         }
     }
 

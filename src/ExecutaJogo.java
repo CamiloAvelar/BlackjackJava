@@ -1,6 +1,3 @@
-
-import java.util.Scanner;
-
 public class ExecutaJogo implements Runnable {
 
     Interface UI = new Interface();
@@ -12,23 +9,22 @@ public class ExecutaJogo implements Runnable {
     @Override
     public void run(){
 
-        Scanner sc = new Scanner(System.in);
         Baralho baralho = new Baralho(true);
         String nome;
-        int creditos;
+        int creditos, aposta;
 
-        System.out.print("Digite o seu nome: ");
-        nome = sc.next();
-        System.out.print("Digite a quantidade de fichas irá comprar: ");
-        creditos = sc.nextInt();
+        UI.disableAllButtons();
+        nome = UI.openModal("nome");
+        creditos = Integer.parseInt(UI.openModal("fichas"));
 
         Jogador eu = new Jogador(nome, creditos);
         Jogador dealer = new Jogador("Dealer", 0);
 
-        boolean endGame = false;
+        boolean abandonGame = false;
 
-        while(!endGame) {
+        while(true) {
 
+            UI.hideCards();
             eu.esvaziaMao();
             dealer.esvaziaMao();
 
@@ -37,95 +33,118 @@ public class ExecutaJogo implements Runnable {
             eu.addCarta(baralho.entregaCarta());
             dealer.addCarta(baralho.entregaCarta());
 
-            System.out.printf("Qual será sua aposta? (Créditos: %d) : ", eu.getCreditos());
-            eu.setAposta(sc.nextInt());
+            /*System.out.printf("Qual será sua aposta? (Créditos: %d) : ", eu.getCreditos());
+            eu.setAposta(sc.nextInt());*/
 
-            System.out.println("Cartas distribuidas!");
-            eu.imprimeMao(true);
-            dealer.imprimeMao(false);
-            System.out.println("\n");
+            aposta = Integer.parseInt(UI.openModal("aposta"));
+            eu.setAposta(aposta);
+
+            UI.enableActionButtons();
+
+            UI.log("Cartas distribuidas!", dealer.getNome());
+            UI.displayCards(eu, dealer, false);
+            /*eu.imprimeMao(true);
+            dealer.imprimeMao(false);*/
+            /*UI.log(eu.imprimeMao(true), eu.getNome());
+            UI.log(dealer.imprimeMao(false), dealer.getNome());*/
 
             boolean euAcabei = false;
             boolean dealerAcabou = false;
             String resp;
 
-            while ((!euAcabei || !dealerAcabou) && !endGame) {
+            while ((!euAcabei || !dealerAcabou)) {
+                UI.showTotal(eu.somaMao(true), dealer.somaMao(false), eu.getCreditos(), dealer.getCreditos(), eu.getAposta());
                 if(!euAcabei) {
-
                     switch (UI.getReturnButton()) {
                         case "pegar":
                             euAcabei = !eu.addCarta(baralho.entregaCarta());
-                            eu.imprimeMao(true);
+                            /*eu.imprimeMao(true);*/
                             break;
                         case "ficar":
                             euAcabei = true;
                             break;
                         case "abandonar":
                             eu.abandonarPartida(dealer);
-                            endGame = true;
+                            UI.log("O jogador desistiu!", eu.getNome());
+                            abandonGame = true;
                             break;
-                        case "desistir":
+                        case "dobrar":
                             eu.dobraAposta();
                             euAcabei = !eu.addCarta(baralho.entregaCarta());
-                            eu.imprimeMao(true);
+                            /*eu.imprimeMao(true);*/
                             break;
                         default:
                             continue;
                     }
-
+                    if(abandonGame) {
+                        UI.showTotal(eu.somaMao(true), dealer.somaMao(false), eu.getCreditos(), dealer.getCreditos(), eu.getAposta());
+                        UI.hideCards();
+                        UI.resetReturn();
+                        break;
+                    }
                     UI.resetReturn();
                 }
 
                 if(!dealerAcabou) {
                     if(dealer.somaMao(true) < 17) {
-                        System.out.println("O Dealer pegou\n");
+                        UI.log("O Dealer pegou uma carta!", dealer.getNome());
                         dealerAcabou = !dealer.addCarta(baralho.entregaCarta());
-                        dealer.imprimeMao(false);
+                        /*dealer.imprimeMao(false);*/
                     } else {
-                        System.out.println("O Dealer fica\n");
+                        UI.log("O Dealer decidiu ficar!", dealer.getNome());
                         dealerAcabou = true;
                     }
                 }
 
-                System.out.println();
+                /*UI.log(eu.imprimeMao(true), eu.getNome());
+                UI.log(dealer.imprimeMao(false), dealer.getNome());*/
+
+                UI.displayCards(eu, dealer, false);
             }
 
-            if(!endGame) {
-                eu.imprimeMao(true);
-                dealer.imprimeMao(true);
+            if(!abandonGame) {
+                /*eu.imprimeMao(true);
+                dealer.imprimeMao(true);*/
+
+                UI.displayCards(eu, dealer, true);
+
 
                 int minhaSoma = eu.somaMao(true);
                 int somaDealer = dealer.somaMao(true);
 
                 if (minhaSoma > somaDealer && minhaSoma <= 21 || somaDealer > 21) {
                     eu.ganharAposta(dealer);
-                    System.out.println("Você ganhou!");
+                    UI.log("Você ganhou!", eu.getNome());
                 } else if (minhaSoma == somaDealer) {
                     eu.setAposta(0);
-                    System.out.println("Empate!");
+                    UI.log("Empatou", "");
                 } else {
                     eu.perderAposta(dealer);
-                    System.out.println("O dealer ganhou!");
+                    UI.log("Dealer ganhou!", dealer.getNome());
                 }
+
+                UI.showTotal(minhaSoma, somaDealer, eu.getCreditos(), dealer.getCreditos(), eu.getAposta());
             }
 
-            System.out.printf("Saldo %s: %d", eu.getNome(), eu.getCreditos());
+            /*System.out.printf("Saldo %s: %d", eu.getNome(), eu.getCreditos());
             System.out.println();
             System.out.printf("Saldo %s: %d", dealer.getNome(), dealer.getCreditos());
             System.out.println();
-            System.out.print("Deseja jogar novamente? (S ou N)\n");
+            System.out.print("Deseja jogar novamente? (S ou N)\n");*/
+
             boolean exitLoop = false;
+            UI.enablePlayAgainButtons();
+            UI.disableActionButtons();
             do {
                 switch(UI.playAgain()) {
                     case "S":
-                        endGame = false;
+                        abandonGame = false;
                         exitLoop = true;
                         UI.resetPlayAgain();
+                        UI.disablePlayAgainButtons();
                         break;
                     case "N":
-                        endGame = true;
-                        exitLoop = true;
-                        UI.resetPlayAgain();
+                        System.exit(0);
                         break;
                     default:
                         break;

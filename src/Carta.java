@@ -27,6 +27,26 @@ public class Carta {
         return numero;
     }
 
+    public String getName() {
+        int n = this.numero;
+
+        if (n > 1 && n < 11) {
+            return Integer.toString(n);
+        } else if (n > 10) {
+            if (n == 11) {
+                return "J";
+            } else if (n == 12) {
+                return "Q";
+            } else if (n == 13) {
+                return "K";
+            }
+        } else if (n == 1) {
+            return "A";
+        }
+
+        return "";
+    }
+
     public void setNumero(int numero) {
         this.numero = numero;
     }

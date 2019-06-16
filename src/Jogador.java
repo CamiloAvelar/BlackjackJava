@@ -2,11 +2,23 @@ public class Jogador {
 
     private String nome;
 
+    public Carta[] getMao() {
+        return mao;
+    }
+
     private Carta[] mao = new Carta[10];
+
+    public int getNumeroCartas() {
+        return numeroCartas;
+    }
 
     private int numeroCartas;
 
     private int creditos;
+
+    public int getAposta() {
+        return aposta;
+    }
 
     private int aposta;
 
@@ -93,18 +105,6 @@ public class Jogador {
 
 
         return somaMao;
-    }
-
-    public void imprimeMao(boolean mostraPrimeiraCarta) {
-        System.out.printf("Cartas de %s\n", this.nome);
-        for (int c = 0; c < this.numeroCartas; c++) {
-            if(c == 0 && !mostraPrimeiraCarta) {
-                System.out.println(" [escondida]");
-            } else {
-                System.out.printf(" %s\n", this.mao[c].toString());
-            }
-        }
-        System.out.printf("Total: %d\n", this.somaMao(mostraPrimeiraCarta));
     }
 
     public int getCreditos() {
