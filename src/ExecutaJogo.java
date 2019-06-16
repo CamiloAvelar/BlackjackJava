@@ -33,9 +33,6 @@ public class ExecutaJogo implements Runnable {
             eu.addCarta(baralho.entregaCarta());
             dealer.addCarta(baralho.entregaCarta());
 
-            /*System.out.printf("Qual será sua aposta? (Créditos: %d) : ", eu.getCreditos());
-            eu.setAposta(sc.nextInt());*/
-
             aposta = Integer.parseInt(UI.openModal("aposta"));
             eu.setAposta(aposta);
 
@@ -43,10 +40,6 @@ public class ExecutaJogo implements Runnable {
 
             UI.log("Cartas distribuidas!", dealer.getNome());
             UI.displayCards(eu, dealer, false);
-            /*eu.imprimeMao(true);
-            dealer.imprimeMao(false);*/
-            /*UI.log(eu.imprimeMao(true), eu.getNome());
-            UI.log(dealer.imprimeMao(false), dealer.getNome());*/
 
             boolean euAcabei = false;
             boolean dealerAcabou = false;
@@ -58,7 +51,6 @@ public class ExecutaJogo implements Runnable {
                     switch (UI.getReturnButton()) {
                         case "pegar":
                             euAcabei = !eu.addCarta(baralho.entregaCarta());
-                            /*eu.imprimeMao(true);*/
                             break;
                         case "ficar":
                             euAcabei = true;
@@ -71,7 +63,6 @@ public class ExecutaJogo implements Runnable {
                         case "dobrar":
                             eu.dobraAposta();
                             euAcabei = !eu.addCarta(baralho.entregaCarta());
-                            /*eu.imprimeMao(true);*/
                             break;
                         default:
                             continue;
@@ -89,23 +80,16 @@ public class ExecutaJogo implements Runnable {
                     if(dealer.somaMao(true) < 17) {
                         UI.log("O Dealer pegou uma carta!", dealer.getNome());
                         dealerAcabou = !dealer.addCarta(baralho.entregaCarta());
-                        /*dealer.imprimeMao(false);*/
                     } else {
                         UI.log("O Dealer decidiu ficar!", dealer.getNome());
                         dealerAcabou = true;
                     }
                 }
 
-                /*UI.log(eu.imprimeMao(true), eu.getNome());
-                UI.log(dealer.imprimeMao(false), dealer.getNome());*/
-
                 UI.displayCards(eu, dealer, false);
             }
 
             if(!abandonGame) {
-                /*eu.imprimeMao(true);
-                dealer.imprimeMao(true);*/
-
                 UI.displayCards(eu, dealer, true);
 
 
@@ -125,12 +109,6 @@ public class ExecutaJogo implements Runnable {
 
                 UI.showTotal(minhaSoma, somaDealer, eu.getCreditos(), dealer.getCreditos(), eu.getAposta());
             }
-
-            /*System.out.printf("Saldo %s: %d", eu.getNome(), eu.getCreditos());
-            System.out.println();
-            System.out.printf("Saldo %s: %d", dealer.getNome(), dealer.getCreditos());
-            System.out.println();
-            System.out.print("Deseja jogar novamente? (S ou N)\n");*/
 
             boolean exitLoop = false;
             UI.enablePlayAgainButtons();
