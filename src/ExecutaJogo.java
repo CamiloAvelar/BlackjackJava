@@ -13,7 +13,7 @@ public class ExecutaJogo implements Runnable {
         String nome;
         int creditos, aposta;
 
-        UI.disableAllButtons();
+        UI.hideAllButtons();
         nome = UI.openModal("nome");
         creditos = Integer.parseInt(UI.openModal("fichas"));
 
@@ -36,7 +36,7 @@ public class ExecutaJogo implements Runnable {
             aposta = Integer.parseInt(UI.openModal("aposta"));
             eu.setAposta(aposta);
 
-            UI.enableActionButtons();
+            UI.showActionButtons();
 
             UI.log("Cartas distribuidas!", dealer.getNome());
             UI.displayCards(eu, dealer, false);
@@ -51,9 +51,11 @@ public class ExecutaJogo implements Runnable {
                     switch (UI.getReturnButton()) {
                         case "pegar":
                             euAcabei = !eu.addCarta(baralho.entregaCarta());
+                            UI.log("Você pegou uma carta!", eu.getNome());
                             break;
                         case "ficar":
                             euAcabei = true;
+                            UI.log("Você decidiu ficar!", eu.getNome());
                             break;
                         case "abandonar":
                             eu.abandonarPartida(dealer);
@@ -63,6 +65,7 @@ public class ExecutaJogo implements Runnable {
                         case "dobrar":
                             eu.dobraAposta();
                             euAcabei = !eu.addCarta(baralho.entregaCarta());
+                            UI.log("Você dobrou a aposta e pegou mais uma carta!", eu.getNome());
                             break;
                         default:
                             continue;
@@ -76,7 +79,16 @@ public class ExecutaJogo implements Runnable {
                     UI.resetReturn();
                 }
 
+                UI.disableActionButtons();
+                UI.displayCards(eu, dealer, false);
+                UI.showTotal(eu.somaMao(true), dealer.somaMao(false), eu.getCreditos(), dealer.getCreditos(), eu.getAposta());
+
                 if(!dealerAcabou) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     if(dealer.somaMao(true) < 17) {
                         UI.log("O Dealer pegou uma carta!", dealer.getNome());
                         dealerAcabou = !dealer.addCarta(baralho.entregaCarta());
@@ -91,7 +103,6 @@ public class ExecutaJogo implements Runnable {
 
             if(!abandonGame) {
                 UI.displayCards(eu, dealer, true);
-
 
                 int minhaSoma = eu.somaMao(true);
                 int somaDealer = dealer.somaMao(true);
@@ -112,14 +123,14 @@ public class ExecutaJogo implements Runnable {
 
             boolean exitLoop = false;
             UI.enablePlayAgainButtons();
-            UI.disableActionButtons();
+            UI.hideActionButtons();
             do {
                 switch(UI.playAgain()) {
                     case "S":
                         abandonGame = false;
                         exitLoop = true;
                         UI.resetPlayAgain();
-                        UI.disablePlayAgainButtons();
+                        UI.hidePlayAgainButtons();
                         break;
                     case "N":
                         System.exit(0);

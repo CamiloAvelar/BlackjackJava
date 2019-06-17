@@ -34,6 +34,7 @@ public class Interface extends JFrame {
 
     private static String returnButton = "none";
     private static String playAgain = "none";
+    private static boolean showPlayAgain = false;
 
     Board board = new Board();
 
@@ -89,48 +90,48 @@ public class Interface extends JFrame {
         this.setLayout(null);
 
         pegar.addActionListener(pegarAct);
-        pegar.setBounds(1000, 400,150,80);
+        pegar.setBounds(970, 530,300,50);
         pegar.setFont(buttonFont);
         pegar.setBackground(buttonColor);
         pegar.setText("PEGAR");
         board.add(pegar);
 
         ficar.addActionListener(ficarAct);
-        ficar.setBounds(1150, 400,150,80);
+        ficar.setBounds(970, 600,300,50);
         ficar.setFont(buttonFont);
         ficar.setBackground(buttonColor);
         ficar.setText("FICAR");
         board.add(ficar);
 
         abandonar.addActionListener(abandonarAct);
-        abandonar.setBounds(1000, 490,150,80);
+        abandonar.setBounds(970, 670,300,50);
         abandonar.setFont(buttonFont);
         abandonar.setBackground(buttonColor);
         abandonar.setText("ABANDONAR");
         board.add(abandonar);
 
         dobrar.addActionListener(dobrarAct);
-        dobrar.setBounds(1150, 490,150,80);
+        dobrar.setBounds(970, 740,300,50);
         dobrar.setFont(buttonFont);
         dobrar.setBackground(buttonColor);
         dobrar.setText("DOBRAR");
         board.add(dobrar);
 
         sim.addActionListener(simAct);
-        sim.setBounds(1000, 400,150,80);
+        sim.setBounds(1000, 510,120,60);
         sim.setFont(buttonFont);
         sim.setBackground(buttonColor);
         sim.setText("SIM");
         board.add(sim);
 
         nao.addActionListener(naoAct);
-        nao.setBounds(1150, 400,150,80);
+        nao.setBounds(1150, 510,120,60);
         nao.setFont(buttonFont);
         nao.setBackground(buttonColor);
         nao.setText("NAO");
         board.add(nao);
 
-        this.disableAllButtons();
+        this.hideAllButtons();
     }
 
     public String openModal(String modalType) {
@@ -179,6 +180,7 @@ public class Interface extends JFrame {
     }
 
     public String getReturnButton () {
+        this.enableActionButtons();
         return Interface.returnButton;
     }
 
@@ -194,7 +196,7 @@ public class Interface extends JFrame {
         return Interface.playAgain;
     }
 
-    public void disableAllButtons() {
+    public void hideAllButtons() {
         pegar.setVisible(false);
         ficar.setVisible(false);
         dobrar.setVisible(false);
@@ -203,29 +205,45 @@ public class Interface extends JFrame {
         nao.setVisible(false);
     }
 
-    public void disableActionButtons() {
+    public void hideActionButtons() {
         pegar.setVisible(false);
         ficar.setVisible(false);
         dobrar.setVisible(false);
         abandonar.setVisible(false);
     }
 
+    public void disableActionButtons() {
+        pegar.setEnabled(false);
+        ficar.setEnabled(false);
+        dobrar.setEnabled(false);
+        abandonar.setEnabled(false);
+    }
+
     public void enableActionButtons() {
+        pegar.setEnabled(true);
+        ficar.setEnabled(true);
+        dobrar.setEnabled(true);
+        abandonar.setEnabled(true);
+    }
+
+    public void showActionButtons() {
         pegar.setVisible(true);
         ficar.setVisible(true);
         dobrar.setVisible(true);
         abandonar.setVisible(true);
-        repaint();
     }
 
-    public void disablePlayAgainButtons() {
+    public void hidePlayAgainButtons() {
         sim.setVisible(false);
         nao.setVisible(false);
+        Interface.showPlayAgain = false;
     }
 
     public void enablePlayAgainButtons() {
         sim.setVisible(true);
         nao.setVisible(true);
+        Interface.showPlayAgain = true;
+
         repaint();
     }
 
@@ -268,6 +286,9 @@ public class Interface extends JFrame {
             g.setColor(backgroundColor);
             g.fillRect(0, 0, width, height);
 
+            g.setColor(Color.black);
+            g.fillRect(gridX, gridY+gridH+50, gridW, 500);
+
             // WRITE LOGS
             g.setFont(fontLog);
             int logIndex = 0;
@@ -281,21 +302,34 @@ public class Interface extends JFrame {
                 logIndex++;
             }
 
+            if(Interface.showPlayAgain) {
+                g.setColor(Color.black);
+                g.drawString("Jogar novamente?", 1000,500);
+            }
+
             if(Interface.showTotal) {
+                g.setColor(Color.black);
+
                 g.drawString("Pontos:", gridX+gridW+50, gridY+290);
                 g.drawString(Interface.playerName, gridX+gridW+50, gridY+320);
                 g.drawString("Dealer", gridX+gridW+210, gridY+320);
                 g.drawString(Integer.toString(Interface.myTotal), gridX+gridW+50, gridY+350);
                 g.drawString(Integer.toString(Interface.dealerTotal), gridX+gridW+210, gridY+350);
 
-                g.drawString("Saldo:", gridX+gridW+50, gridY+590);
-                g.drawString(Interface.playerName, gridX+gridW+50, gridY+620);
-                g.drawString("Dealer", gridX+gridW+210, gridY+620);
-                g.drawString(Integer.toString(Interface.meuSaldo), gridX+gridW+50, gridY+650);
-                g.drawString(Integer.toString(Interface.dealerSaldo), gridX+gridW+210, gridY+650);
+                g.drawString("Saldo:", gridX+gridW+100, gridY+70);
+                g.drawString(Interface.playerName, gridX+gridW+50, gridY+100);
+                g.drawString("Dealer", gridX+gridW+50, gridY+165);
+                g.setColor(Color.green);
+                g.drawString("R$",gridX+gridW+50,gridY+130);
+                g.drawString(Integer.toString(Interface.meuSaldo), gridX+gridW+100, gridY+130);
+                g.drawString("R$", gridX+gridW+50, gridY+200);
+                g.drawString(Integer.toString(Interface.dealerSaldo), gridX+gridW+100, gridY+200);
 
-                g.drawString("Aposta:", gridX+gridW+50, gridY+700);
-                g.drawString(Integer.toString(Interface.aposta), gridX+gridW+180, gridY+700);
+                g.setColor(Color.black);
+                g.drawString("Aposta:", gridX+gridW+50, gridY);
+                g.setColor(Color.red);
+                g.drawString("R$", gridX+gridW+165, gridY);
+                g.drawString(Integer.toString(Interface.aposta), gridX+gridW+205, gridY);
             }
 
             if(Interface.displayCards) {
