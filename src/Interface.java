@@ -41,6 +41,7 @@ public class Interface extends JFrame {
     ArrayList<Message> Log = new ArrayList<Message>();
 
     Color backgroundColor = new Color(39, 119,20);
+    Color infoColor = new Color(29,150,20);
     Color buttonColor = new Color(204,204,0);
     Color cDealer = Color.red;
     Color cPlayer = new Color(25,55,255);
@@ -118,14 +119,14 @@ public class Interface extends JFrame {
         board.add(dobrar);
 
         sim.addActionListener(simAct);
-        sim.setBounds(1000, 510,120,60);
+        sim.setBounds(990, 560,120,60);
         sim.setFont(buttonFont);
         sim.setBackground(buttonColor);
         sim.setText("SIM");
         board.add(sim);
 
         nao.addActionListener(naoAct);
-        nao.setBounds(1150, 510,120,60);
+        nao.setBounds(1140, 560,120,60);
         nao.setFont(buttonFont);
         nao.setBackground(buttonColor);
         nao.setText("NAO");
@@ -135,17 +136,19 @@ public class Interface extends JFrame {
     }
 
     public String openModal(String modalType) {
-        JPanel p=new JPanel(new GridLayout(1, 2, 10, 10));
-        p.setPreferredSize(new Dimension(100, 20));
+        JPanel p=new JPanel(new GridLayout(2, 1, 2, 1));
+        p.setPreferredSize(new Dimension(80, 60));
         JTextField t = new JTextField();
-
-        p.add(t);
 
         int option;
         String text = "";
 
         switch (modalType) {
             case "nome":
+                JLabel lblName = new JLabel("Digite o seu nome:");
+
+                p.add(lblName);
+                p.add(t);
                 option = JOptionPane.showConfirmDialog(null,p,"Nome:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
                 if(option==0){
                     text = t.getText();
@@ -155,15 +158,30 @@ public class Interface extends JFrame {
                 }
                 break;
             case "fichas":
+                JLabel lblCreditos = new JLabel("Digite a quantidade de R$ que deseja comprar:");
+
+                p.setPreferredSize(new Dimension(350, 70));
+                p.add(lblCreditos);
+                p.add(t);
                 option = JOptionPane.showConfirmDialog(null,p,"Fichas:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
                 if(option==0){
                     text = t.getText();
+                    Interface.meuSaldo = Integer.parseInt(text);
                 }else{
                     System.exit(0);
                 }
                 break;
             case "aposta":
-                option = JOptionPane.showConfirmDialog(null,p,"Qual será sua aposta:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+                JPanel apostaPanel =new JPanel(new GridLayout(3, 1, 2, 1));
+                apostaPanel.setPreferredSize(new Dimension(100, 90));
+
+                JLabel lblSaldo = new JLabel("Saldo: R$" + Interface.meuSaldo);
+                JLabel lblBet = new JLabel("Digite a sua aposta: ");
+
+                apostaPanel.add(lblSaldo);
+                apostaPanel.add(lblBet);
+                apostaPanel.add(t);
+                option = JOptionPane.showConfirmDialog(null,apostaPanel,"Qual será sua aposta:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
                 if(option==0){
                     text = t.getText();
                 }else{
@@ -248,8 +266,11 @@ public class Interface extends JFrame {
     }
 
     public void log(String message, String who) {
-        Log.add(new Message(message, who));
+        if(Log.size() > 7){
+            Log.remove(0);
+        }
 
+        Log.add(new Message(message, who));
         repaint();
     }
 
@@ -263,6 +284,10 @@ public class Interface extends JFrame {
 
         Interface.aposta = aposta;
         repaint();
+    }
+
+    public void hideTotal() {
+        Interface.showTotal = false;
     }
 
     public void displayCards(Jogador eu, Jogador dealer, boolean showFirstCard) {
@@ -289,6 +314,9 @@ public class Interface extends JFrame {
             g.setColor(Color.black);
             g.fillRect(gridX, gridY+gridH+50, gridW, 500);
 
+            g.setColor(infoColor);
+            g.fillRect(980,10,285,480);
+
             // WRITE LOGS
             g.setFont(fontLog);
             int logIndex = 0;
@@ -304,7 +332,7 @@ public class Interface extends JFrame {
 
             if(Interface.showPlayAgain) {
                 g.setColor(Color.black);
-                g.drawString("Jogar novamente?", 1000,500);
+                g.drawString("Jogar novamente?", 990,550);
             }
 
             if(Interface.showTotal) {

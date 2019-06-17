@@ -131,6 +131,7 @@ public class ExecutaJogo implements Runnable {
                         exitLoop = true;
                         UI.resetPlayAgain();
                         UI.hidePlayAgainButtons();
+                        UI.hideTotal();
                         break;
                     case "N":
                         System.exit(0);
