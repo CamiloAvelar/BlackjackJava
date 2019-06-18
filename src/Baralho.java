@@ -2,6 +2,7 @@
 import java.util.Random;
 
 public class Baralho {
+    //TODO: Transformar o Array de Cartas para ArrayList ou outro.
     private Carta[] cartas;
     private int numeroCartas;
 

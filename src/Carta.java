@@ -1,6 +1,5 @@
 public class Carta {
 
-
     private Naipes naipe;
     private int numero;
 

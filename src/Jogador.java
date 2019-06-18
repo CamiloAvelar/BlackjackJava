@@ -2,25 +2,26 @@ public class Jogador {
 
     private String nome;
 
-    public Carta[] getMao() {
-        return mao;
-    }
-
     private Carta[] mao = new Carta[10];
-
-    public int getNumeroCartas() {
-        return numeroCartas;
-    }
 
     private int numeroCartas;
 
+    //TODO: Transformar Creditos e Aposta para double
     private int creditos;
+    private int aposta;
 
     public int getAposta() {
         return aposta;
     }
 
-    private int aposta;
+    public int getNumeroCartas() {
+        return numeroCartas;
+    }
+
+    public Carta[] getMao() {
+        return mao;
+    }
+
 
     public void setAposta(int aposta) {
         this.aposta = aposta;

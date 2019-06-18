@@ -1,3 +1,5 @@
+//TODO: Adicionar validação nos campos
+
 public class ExecutaJogo implements Runnable {
 
     Interface UI = new Interface();
