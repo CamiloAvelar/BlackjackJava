@@ -3,8 +3,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
 import java.util.*;
+import java.util.HashMap;
 
-public class Interface extends JFrame {
+public class Interface extends JFrame implements ActionListener{
 
     int width = 1280;
     int height = 800;
@@ -14,12 +15,13 @@ public class Interface extends JFrame {
     int gridW = 900;
     int gridH = 400;
 
-    private static String playerName;
+    private Map<String, JButton> botoes = new HashMap<String, JButton>();
 
     private static boolean showTotal = false;
     private static int myTotal;
     private static int dealerTotal;
 
+    private static String playerName;
     private static int meuSaldo;
     private static int dealerSaldo;
 
@@ -50,24 +52,6 @@ public class Interface extends JFrame {
     Font buttonFont = new Font("Times New Roman", Font.PLAIN, 30);
     Font fontLog = new Font("Times New Roman", Font.ITALIC, 30);
 
-    JButton pegar = new JButton();
-    pegarAction pegarAct = new pegarAction();
-
-    JButton ficar = new JButton();
-    ficarAction ficarAct = new ficarAction();
-
-    JButton abandonar = new JButton();
-    abandonarAction abandonarAct = new abandonarAction();
-
-    JButton dobrar = new JButton();
-    dobrarAction dobrarAct = new dobrarAction();
-
-    JButton sim = new JButton();
-    simAction simAct = new simAction();
-
-    JButton nao = new JButton();
-    naoAction naoAct = new naoAction();
-
     int[] polyX = new int[4];
     int[] polyY = new int[4];
 
@@ -79,114 +63,104 @@ public class Interface extends JFrame {
     int cardW = tCardW - spacing*2;
     int cardH = tCardH - spacing*2;
 
-
     public Interface() {
         this.setSize(width, height + 29);
         this.setTitle("Blackjack");
         this.setVisible(true);
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         this.setContentPane(board);
         this.setLayout(null);
 
-        pegar.addActionListener(pegarAct);
-        pegar.setBounds(970, 530,300,50);
-        pegar.setFont(buttonFont);
-        pegar.setBackground(buttonColor);
-        pegar.setText("PEGAR");
-        board.add(pegar);
+        for (Botoes b: Botoes.values()){
+            botoes.put(b.name(), new JButton());
 
-        ficar.addActionListener(ficarAct);
-        ficar.setBounds(970, 600,300,50);
-        ficar.setFont(buttonFont);
-        ficar.setBackground(buttonColor);
-        ficar.setText("FICAR");
-        board.add(ficar);
+            botoes.get(b.name()).setText(b.name());
+            botoes.get(b.name()).setText(b.name());
+            botoes.get(b.name()).setBounds(170, 530,300,50);
+            botoes.get(b.name()).setFont(buttonFont);
+            botoes.get(b.name()).setBackground(buttonColor);
+            botoes.get(b.name()).addActionListener(this);
 
-        abandonar.addActionListener(abandonarAct);
-        abandonar.setBounds(970, 670,300,50);
-        abandonar.setFont(buttonFont);
-        abandonar.setBackground(buttonColor);
-        abandonar.setText("ABANDONAR");
-        board.add(abandonar);
+            board.add(botoes.get(b.name()));
+        }
 
-        dobrar.addActionListener(dobrarAct);
-        dobrar.setBounds(970, 740,300,50);
-        dobrar.setFont(buttonFont);
-        dobrar.setBackground(buttonColor);
-        dobrar.setText("DOBRAR");
-        board.add(dobrar);
+        this.setButtonsSize();
+    }
 
-        sim.addActionListener(simAct);
-        sim.setBounds(990, 560,120,60);
-        sim.setFont(buttonFont);
-        sim.setBackground(buttonColor);
-        sim.setText("SIM");
-        board.add(sim);
+    public void setButtonsSize() {
+        this.botoes.get("Pegar").setBounds(970, 530,300,50);
+        this.botoes.get("Ficar").setBounds(970, 600,300,50);
+        this.botoes.get("Abandonar").setBounds(970, 670,300,50);
+        this.botoes.get("Dobrar").setBounds(970, 740,300,50);
+        this.botoes.get("Sim").setBounds(990, 560,120,60);
+        this.botoes.get("Nao").setBounds(1140, 560,120,60);
+    }
 
-        nao.addActionListener(naoAct);
-        nao.setBounds(1140, 560,120,60);
-        nao.setFont(buttonFont);
-        nao.setBackground(buttonColor);
-        nao.setText("NAO");
-        board.add(nao);
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == botoes.get("Pegar")) {
+            Interface.returnButton = "pegar";
+        }
 
-        this.hideAllButtons();
+        if(e.getSource() == botoes.get("Ficar")) {
+            Interface.returnButton = "ficar";
+        }
+
+        if(e.getSource() == botoes.get("Abandonar")) {
+            Interface.returnButton = "abandonar";
+        }
+
+        if(e.getSource() == botoes.get("Dobrar")) {
+            Interface.returnButton = "dobrar";
+        }
+
+        if(e.getSource() == botoes.get("Sim")) {
+            Log.clear();
+            Interface.playAgain = "S";
+            repaint();
+        }
+
+        if(e.getSource() == botoes.get("Nao")) {
+            Interface.playAgain = "N";
+        }
     }
 
     public String openModal(String modalType) {
-        JPanel p=new JPanel(new GridLayout(2, 1, 2, 1));
-        p.setPreferredSize(new Dimension(80, 60));
-        JTextField t = new JTextField();
-
-        int option;
         String text = "";
-
         switch (modalType) {
             case "nome":
-                JLabel lblName = new JLabel("Digite o seu nome:");
-
-                p.add(lblName);
-                p.add(t);
-                option = JOptionPane.showConfirmDialog(null,p,"Nome:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
-                if(option==0){
-                    text = t.getText();
-                    Interface.playerName = text;
-                }else{
+                String name = JOptionPane.showInputDialog(null,"Digite seu nome:", "Nome", JOptionPane.PLAIN_MESSAGE);
+                if(name == null) {
                     System.exit(0);
                 }
+
+                Interface.playerName = name;
+                text = name;
                 break;
             case "fichas":
-                JLabel lblCreditos = new JLabel("Digite a quantidade de R$ que deseja comprar:");
-
-                p.setPreferredSize(new Dimension(350, 70));
-                p.add(lblCreditos);
-                p.add(t);
-                option = JOptionPane.showConfirmDialog(null,p,"Fichas:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
-                if(option==0){
-                    text = t.getText();
-                    Interface.meuSaldo = Integer.parseInt(text);
-                }else{
+                String fichas = JOptionPane.showInputDialog(null,"Digite a quantidade de R$ que deseja comprar:", "Fichas", JOptionPane.PLAIN_MESSAGE);
+                if(fichas == null) {
                     System.exit(0);
                 }
+
+                Interface.meuSaldo = Integer.parseInt(fichas);
+                text = fichas;
                 break;
             case "aposta":
                 JPanel apostaPanel =new JPanel(new GridLayout(3, 1, 2, 1));
-                apostaPanel.setPreferredSize(new Dimension(100, 90));
+                apostaPanel.setPreferredSize(new Dimension(100, 50));
 
                 JLabel lblSaldo = new JLabel("Saldo: R$" + Interface.meuSaldo);
                 JLabel lblBet = new JLabel("Digite a sua aposta: ");
 
                 apostaPanel.add(lblSaldo);
                 apostaPanel.add(lblBet);
-                apostaPanel.add(t);
-                option = JOptionPane.showConfirmDialog(null,apostaPanel,"Qual será sua aposta:",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
-                if(option==0){
-                    text = t.getText();
-                }else{
+                String aposta = JOptionPane.showInputDialog(null,apostaPanel, "Aposta", JOptionPane.PLAIN_MESSAGE);
+                if(aposta == null) {
                     System.exit(0);
                 }
+
+                text = aposta;
                 break;
         }
 
@@ -194,11 +168,10 @@ public class Interface extends JFrame {
     }
 
     public void disablePegar() {
-        pegar.setEnabled(false);
+        botoes.get("Pegar").setEnabled(false);
     }
 
     public String getReturnButton () {
-        this.enableActionButtons();
         return Interface.returnButton;
     }
 
@@ -215,51 +188,58 @@ public class Interface extends JFrame {
     }
 
     public void hideAllButtons() {
-        pegar.setVisible(false);
-        ficar.setVisible(false);
-        dobrar.setVisible(false);
-        abandonar.setVisible(false);
-        sim.setVisible(false);
-        nao.setVisible(false);
+        for(Botoes b: Botoes.values()) {
+            botoes.get(b.name()).setVisible(false);
+        }
     }
 
     public void hideActionButtons() {
-        pegar.setVisible(false);
-        ficar.setVisible(false);
-        dobrar.setVisible(false);
-        abandonar.setVisible(false);
+        for(Botoes b: Botoes.values()) {
+            if(b.getAction()) {
+                botoes.get(b.name()).setVisible(false);
+            }
+        }
     }
 
     public void disableActionButtons() {
-        pegar.setEnabled(false);
-        ficar.setEnabled(false);
-        dobrar.setEnabled(false);
-        abandonar.setEnabled(false);
+        for(Botoes b: Botoes.values()) {
+            if(b.getAction()) {
+                botoes.get(b.name()).setEnabled(false);
+            }
+        }
     }
 
     public void enableActionButtons() {
-        pegar.setEnabled(true);
-        ficar.setEnabled(true);
-        dobrar.setEnabled(true);
-        abandonar.setEnabled(true);
+        for(Botoes b: Botoes.values()) {
+            if(b.getAction()) {
+                botoes.get(b.name()).setEnabled(true);
+            }
+        }
     }
 
     public void showActionButtons() {
-        pegar.setVisible(true);
-        ficar.setVisible(true);
-        dobrar.setVisible(true);
-        abandonar.setVisible(true);
+        for(Botoes b: Botoes.values()) {
+            if(b.getAction()) {
+                botoes.get(b.name()).setVisible(true);
+            }
+        }
     }
 
     public void hidePlayAgainButtons() {
-        sim.setVisible(false);
-        nao.setVisible(false);
+        for(Botoes b: Botoes.values()) {
+            if(!b.getAction()) {
+                botoes.get(b.name()).setVisible(false);
+            }
+        }
         Interface.showPlayAgain = false;
     }
 
     public void enablePlayAgainButtons() {
-        sim.setVisible(true);
-        nao.setVisible(true);
+        for(Botoes b: Botoes.values()) {
+            if(!b.getAction()) {
+                botoes.get(b.name()).setVisible(true);
+            }
+        }
         Interface.showPlayAgain = true;
 
         repaint();
@@ -464,55 +444,4 @@ public class Interface extends JFrame {
             }
         }
     }
-
-    public class pegarAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Interface.returnButton = "pegar";
-        }
-    }
-
-    public class ficarAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Interface.returnButton = "ficar";
-        }
-    }
-
-    public class abandonarAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Interface.returnButton = "abandonar";
-        }
-    }
-
-    public class dobrarAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Interface.returnButton = "dobrar";
-        }
-    }
-
-    public class simAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Log.clear();
-            Interface.playAgain = "S";
-            repaint();
-        }
-    }
-
-    public class naoAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Interface.playAgain = "N";
-        }
-    }
-
 }

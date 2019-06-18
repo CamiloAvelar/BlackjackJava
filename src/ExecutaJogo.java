@@ -50,6 +50,7 @@ public class ExecutaJogo implements Runnable {
             while ((!euAcabei || !dealerAcabou)) {
                 UI.showTotal(eu.somaMao(true), dealer.somaMao(false), eu.getCreditos(), dealer.getCreditos(), eu.getAposta());
                 if(!euAcabei) {
+                    UI.enableActionButtons();
                     switch (UI.getReturnButton()) {
                         case "pegar":
                             euAcabei = !eu.addCarta(baralho.entregaCarta());
@@ -70,6 +71,11 @@ public class ExecutaJogo implements Runnable {
                             UI.log("Você dobrou a aposta e pegou mais uma carta!", eu.getNome());
                             break;
                         default:
+                            try {
+                                Thread.sleep(10);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                             continue;
                     }
                     if(abandonGame) {
@@ -139,6 +145,11 @@ public class ExecutaJogo implements Runnable {
                         System.exit(0);
                         break;
                     default:
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         break;
                 }
             } while (!exitLoop);
