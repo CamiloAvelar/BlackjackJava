@@ -35,7 +35,11 @@ public class ExecutaJogo implements Runnable {
             eu.addCarta(baralho.entregaCarta());
             dealer.addCarta(baralho.entregaCarta());
 
-            aposta = Double.parseDouble(UI.openModal("aposta"));
+            creditos = eu.getCreditos();
+            do{
+                aposta = Double.parseDouble(UI.openModal("aposta"));
+            } while((aposta > creditos) || aposta < 1);
+
             eu.setAposta(aposta);
 
             UI.showActionButtons();

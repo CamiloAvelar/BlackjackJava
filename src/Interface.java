@@ -359,7 +359,7 @@ public class Interface extends JFrame implements ActionListener{
                 dealerSpacing = 0;
             }
 
-            if(isDealer && i == 0) {
+            if(isDealer && i == 0 && !Interface.showFirstCard) {
                 g.setColor(Color.black);
             } else {
                 g.setColor(Color.white);
@@ -370,7 +370,7 @@ public class Interface extends JFrame implements ActionListener{
             g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2+dealerSpacing, rounding*2, rounding*2);
             g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+dealerSpacing, rounding*2, rounding*2);
             g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2+dealerSpacing, rounding*2, rounding*2);
-            if(!(isDealer && i == 0)) {
+            if(!(isDealer && i == 0) || Interface.showFirstCard) {
                 g.setFont(fontCard);
                 if (c.getNaipe().toString().equalsIgnoreCase("Copas") || c.getNaipe().toString().equalsIgnoreCase("Ouros")) {
                     g.setColor(Color.red);
