@@ -17,7 +17,9 @@ public class ExecutaJogo implements Runnable {
 
         UI.hideAllButtons();
         nome = UI.openModal("nome");
-        creditos = Double.parseDouble(UI.openModal("fichas"));
+        do {
+            creditos = Double.parseDouble(UI.openModal("fichas"));
+        } while (creditos < 1);
 
         Jogador eu = new Jogador(nome, creditos);
         Jogador dealer = new Jogador("Dealer", 0);

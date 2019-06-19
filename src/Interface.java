@@ -140,14 +140,22 @@ public class Interface extends JFrame implements ActionListener{
                     System.exit(0);
                 }
 
-                Interface.meuSaldo = Double.parseDouble(fichas);
+                fichas = fichas.replace(',', '.');
+
+                try {
+                    Interface.meuSaldo = Double.parseDouble(fichas);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showConfirmDialog(null,"Formato inválido!", "Erro!", JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE);
+                    fichas = "0.0";
+                }
+
                 text = fichas;
                 break;
             case "aposta":
                 JPanel apostaPanel = new JPanel(new GridLayout(3, 1, 2, 1));
                 apostaPanel.setPreferredSize(new Dimension(100, 50));
 
-                JLabel lblSaldo = new JLabel("Saldo: R$" + Interface.meuSaldo);
+                JLabel lblSaldo = new JLabel("Saldo: R$" + String.format("%.2f", Interface.meuSaldo));
                 JLabel lblBet = new JLabel("Digite a sua aposta: ");
 
                 apostaPanel.add(lblSaldo);
@@ -155,6 +163,21 @@ public class Interface extends JFrame implements ActionListener{
                 String aposta = JOptionPane.showInputDialog(null,apostaPanel, "Aposta", JOptionPane.PLAIN_MESSAGE);
                 if(aposta == null) {
                     System.exit(0);
+                }
+
+                aposta = aposta.replace(',', '.');
+
+                try {
+                    if(Double.parseDouble(aposta) < 1.0) {
+                        JOptionPane.showConfirmDialog(null,"Aposta deve ser maior que R$1.0", "Erro!", JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE);
+                    }
+
+                    if(Double.parseDouble(aposta) > Interface.meuSaldo) {
+                        JOptionPane.showConfirmDialog(null,"Saldo insuficiente!", "Erro!", JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE);
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showConfirmDialog(null,"Formato inválido!", "Erro!", JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE);
+                    aposta = "0.0";
                 }
 
                 text = aposta;
@@ -323,15 +346,15 @@ public class Interface extends JFrame implements ActionListener{
                 g.drawString("Dealer", gridX+gridW+50, gridY+165);
                 g.setColor(Color.green);
                 g.drawString("R$",gridX+gridW+50,gridY+130);
-                g.drawString(Double.toString(Interface.meuSaldo), gridX+gridW+100, gridY+130);
+                g.drawString(String.format("%.2f", Interface.meuSaldo), gridX+gridW+100, gridY+130);
                 g.drawString("R$", gridX+gridW+50, gridY+200);
-                g.drawString(Double.toString(Interface.dealerSaldo), gridX+gridW+100, gridY+200);
+                g.drawString(String.format("%.2f", Interface.dealerSaldo), gridX+gridW+100, gridY+200);
 
                 g.setColor(Color.black);
                 g.drawString("Aposta:", gridX+gridW+50, gridY);
                 g.setColor(Color.red);
                 g.drawString("R$", gridX+gridW+165, gridY);
-                g.drawString(Double.toString(Interface.aposta), gridX+gridW+205, gridY);
+                g.drawString(String.format("%.2f", Interface.aposta), gridX+gridW+205, gridY);
             }
 
             if(Interface.displayCards) {
