@@ -1,24 +1,17 @@
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Baralho {
-    //TODO: Transformar o Array de Cartas para ArrayList ou outro.
-    private Carta[] cartas;
-    private int numeroCartas;
+    private ArrayList<Carta> cartas;
 
     public Baralho(boolean embaralhar) {
-        this.numeroCartas = 52;
-        this.cartas = new Carta[this.numeroCartas];
-
-        int indexCarta = 0;
+        this.cartas = new ArrayList<>();
 
         for(int naipe = 0; naipe < 4; naipe++){
 
             for(int numero = 1; numero <= 13; numero++) {
-
-                this.cartas[indexCarta] = new Carta(Naipes.values()[naipe], numero);
-                indexCarta++;
-
+                this.cartas.add(new Carta(Naipes.values()[naipe], numero));
             }
         }
 
@@ -28,41 +21,18 @@ public class Baralho {
     }
 
     public void embaralha() {
-
-        Random random = new Random();
-
-        Carta temp;
-
-        int j;
-        for(int i = 0 ; i < this.numeroCartas; i++) {
-            j = random.nextInt(this.numeroCartas);
-
-            temp = this.cartas[i];
-            this.cartas[i] = this.cartas[j];
-            this.cartas[j] = temp;
-        }
+        Collections.shuffle(cartas);
     }
 
     public Carta entregaCarta() {
+        Carta topo = this.cartas.get(0);
 
-        Carta topo = this.cartas[0];
-
-        // move todas as cartas para a esquerda
-        for (int c = 1; c < this.numeroCartas; c++) {
-            this.cartas[c-1] = this.cartas[c];
-        }
-
-        this.cartas[this.numeroCartas-1] = null;
-
-        this.numeroCartas--;
+        this.cartas.remove(0);
 
         return topo;
     }
 
-    public void printBaralho(int numeroImpressao) {
-        for (int c = 0 ; c < numeroImpressao; c++) {
-            System.out.printf("% 3d/%d %s\n", c + 1, this.numeroCartas, this.cartas[c].toString());
-        }
-        System.out.printf("\t\t[%d outro]\n", this.numeroCartas-numeroImpressao);
+    public void printBaralho() {
+        System.out.println(this.cartas);
     }
 }

@@ -13,11 +13,11 @@ public class ExecutaJogo implements Runnable {
 
         Baralho baralho = new Baralho(true);
         String nome;
-        int creditos, aposta;
+        double creditos, aposta;
 
         UI.hideAllButtons();
         nome = UI.openModal("nome");
-        creditos = Integer.parseInt(UI.openModal("fichas"));
+        creditos = Double.parseDouble(UI.openModal("fichas"));
 
         Jogador eu = new Jogador(nome, creditos);
         Jogador dealer = new Jogador("Dealer", 0);
@@ -35,7 +35,7 @@ public class ExecutaJogo implements Runnable {
             eu.addCarta(baralho.entregaCarta());
             dealer.addCarta(baralho.entregaCarta());
 
-            aposta = Integer.parseInt(UI.openModal("aposta"));
+            aposta = Double.parseDouble(UI.openModal("aposta"));
             eu.setAposta(aposta);
 
             UI.showActionButtons();
@@ -62,7 +62,7 @@ public class ExecutaJogo implements Runnable {
                             break;
                         case "abandonar":
                             eu.abandonarPartida(dealer);
-                            UI.log("O jogador desistiu!", eu.getNome());
+                            UI.log("Você desistiu!", eu.getNome());
                             abandonGame = true;
                             break;
                         case "dobrar":

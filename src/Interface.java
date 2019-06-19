@@ -22,15 +22,13 @@ public class Interface extends JFrame implements ActionListener{
     private static int dealerTotal;
 
     private static String playerName;
-    private static int meuSaldo;
-    private static int dealerSaldo;
+    private static double meuSaldo;
+    private static double dealerSaldo;
 
-    private static int aposta;
+    private static double aposta;
 
-    private static Carta[] myCards;
-    private static Carta[] dealerCards;
-    private static int myCardsQtd;
-    private static int dealerCardsQtd;
+    private static ArrayList<Carta> myCards;
+    private static ArrayList<Carta> dealerCards;
     private static boolean displayCards = false;
     private static boolean showFirstCard = false;
 
@@ -77,7 +75,6 @@ public class Interface extends JFrame implements ActionListener{
 
             botoes.get(b.name()).setText(b.name());
             botoes.get(b.name()).setText(b.name());
-            botoes.get(b.name()).setBounds(170, 530,300,50);
             botoes.get(b.name()).setFont(buttonFont);
             botoes.get(b.name()).setBackground(buttonColor);
             botoes.get(b.name()).addActionListener(this);
@@ -143,11 +140,11 @@ public class Interface extends JFrame implements ActionListener{
                     System.exit(0);
                 }
 
-                Interface.meuSaldo = Integer.parseInt(fichas);
+                Interface.meuSaldo = Double.parseDouble(fichas);
                 text = fichas;
                 break;
             case "aposta":
-                JPanel apostaPanel =new JPanel(new GridLayout(3, 1, 2, 1));
+                JPanel apostaPanel = new JPanel(new GridLayout(3, 1, 2, 1));
                 apostaPanel.setPreferredSize(new Dimension(100, 50));
 
                 JLabel lblSaldo = new JLabel("Saldo: R$" + Interface.meuSaldo);
@@ -254,7 +251,7 @@ public class Interface extends JFrame implements ActionListener{
         repaint();
     }
 
-    public void showTotal(int myTotal, int dealerTotal, int meuSaldo, int dealerSaldo, int aposta) {
+    public void showTotal(int myTotal, int dealerTotal, double meuSaldo, double dealerSaldo, double aposta) {
         Interface.showTotal = true;
         Interface.myTotal = myTotal;
         Interface.dealerTotal = dealerTotal;
@@ -273,9 +270,6 @@ public class Interface extends JFrame implements ActionListener{
     public void displayCards(Jogador eu, Jogador dealer, boolean showFirstCard) {
         Interface.myCards = eu.getMao();
         Interface.dealerCards = dealer.getMao();
-
-        Interface.myCardsQtd = eu.getNumeroCartas();
-        Interface.dealerCardsQtd = dealer.getNumeroCartas();
 
         Interface.displayCards = true;
         Interface.showFirstCard = showFirstCard;
@@ -329,119 +323,90 @@ public class Interface extends JFrame implements ActionListener{
                 g.drawString("Dealer", gridX+gridW+50, gridY+165);
                 g.setColor(Color.green);
                 g.drawString("R$",gridX+gridW+50,gridY+130);
-                g.drawString(Integer.toString(Interface.meuSaldo), gridX+gridW+100, gridY+130);
+                g.drawString(Double.toString(Interface.meuSaldo), gridX+gridW+100, gridY+130);
                 g.drawString("R$", gridX+gridW+50, gridY+200);
-                g.drawString(Integer.toString(Interface.dealerSaldo), gridX+gridW+100, gridY+200);
+                g.drawString(Double.toString(Interface.dealerSaldo), gridX+gridW+100, gridY+200);
 
                 g.setColor(Color.black);
                 g.drawString("Aposta:", gridX+gridW+50, gridY);
                 g.setColor(Color.red);
                 g.drawString("R$", gridX+gridW+165, gridY);
-                g.drawString(Integer.toString(Interface.aposta), gridX+gridW+205, gridY);
+                g.drawString(Double.toString(Interface.aposta), gridX+gridW+205, gridY);
             }
 
             if(Interface.displayCards) {
                 //player cards
-                for (int i = 0; i < Interface.myCardsQtd; i++) {
-                    g.setColor(Color.white);
-                    g.fillRect(gridX+spacing+tCardW*i+rounding, gridY+spacing, cardW-rounding*2, cardH);
-                    g.fillRect(gridX+spacing+tCardW*i, gridY+spacing+rounding, cardW, cardH-rounding*2);
-                    g.fillOval(gridX+spacing+tCardW*i, gridY+spacing, rounding*2, rounding*2);
-                    g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2, rounding*2, rounding*2);
-                    g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing, rounding*2, rounding*2);
-                    g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2, rounding*2, rounding*2);
-
-                    g.setFont(fontCard);
-                    if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Copas") || Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
-                        g.setColor(Color.red);
-                    } else {
-                        g.setColor(Color.black);
-                    }
-
-                    g.drawString(Interface.myCards[i].getName(), gridX+spacing+tCardW*i+rounding, gridY+spacing+cardH-rounding);
-
-                    if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Copas")) {
-                        g.fillOval(gridX+tCardW*i+42, gridY+70, 35, 35);
-                        g.fillOval(gridX+tCardW*i+73, gridY+70, 35, 35);
-                        g.fillArc(gridX+tCardW*i+30, gridY+90, 90, 90, 51, 78);
-                    } else if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
-                        polyX[0] = gridX+tCardW*i+75;
-                        polyX[1] = gridX+tCardW*i+50;
-                        polyX[2] = gridX+tCardW*i+75;
-                        polyX[3] = gridX+tCardW*i+100;
-                        polyY[0] = gridY+60;
-                        polyY[1] = gridY+100;
-                        polyY[2] = gridY+140;
-                        polyY[3] = gridY+100;
-                        g.fillPolygon(polyX, polyY, 4);
-                    } else if (Interface.myCards[i].getNaipe().toString().equalsIgnoreCase("Espadas")) {
-                        g.fillOval(gridX+tCardW*i+42, gridY+90, 35, 35);
-                        g.fillOval(gridX+tCardW*i+73, gridY+90, 35, 35);
-                        g.fillArc(gridX+tCardW*i+30, gridY+15, 90, 90, 51+180, 78);
-                        g.fillRect(gridX+tCardW*i+70, gridY+100, 10, 40);
-                    } else {
-                        g.fillOval(gridX+tCardW*i+40, gridY+90, 35, 35);
-                        g.fillOval(gridX+tCardW*i+75, gridY+90, 35, 35);
-                        g.fillOval(gridX+tCardW*i+58, gridY+62, 35, 35);
-                        g.fillRect(gridX+tCardW*i+70, gridY+75, 10, 70);
-                    }
+                int i = 0;
+                for (Carta c : myCards) {
+                    drawCards(g, c, i, false);
+                    i++;
                 }
                  //dealer cards
-                for (int i = 0; i < Interface.dealerCardsQtd; i++) {
-                    if(i == 0 && !Interface.showFirstCard) {
-                        g.setColor(Color.black);
-                        g.fillRect(gridX+spacing+tCardW*i+rounding, gridY+spacing+200, cardW-rounding*2, cardH);
-                        g.fillRect(gridX+spacing+tCardW*i, gridY+spacing+rounding+200, cardW, cardH-rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+200, rounding*2, rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+200, rounding*2, rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
-                    } else {
-                        g.setColor(Color.white);
-                        g.fillRect(gridX+spacing+tCardW*i+rounding, gridY+spacing+200, cardW-rounding*2, cardH);
-                        g.fillRect(gridX+spacing+tCardW*i, gridY+spacing+rounding+200, cardW, cardH-rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+200, rounding*2, rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+200, rounding*2, rounding*2);
-                        g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2+200, rounding*2, rounding*2);
+                int iDealer = 0;
+                for (Carta c : dealerCards) {
+                    drawCards(g, c, iDealer, true);
 
-                        g.setFont(fontCard);
-                        if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Copas") || Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
-                            g.setColor(Color.red);
-                        } else {
-                            g.setColor(Color.black);
-                        }
-
-                        g.drawString(Interface.dealerCards[i].getName(), gridX+spacing+tCardW*i+rounding, gridY+spacing+cardH-rounding+200);
-
-                        if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Copas")) {
-                            g.fillOval(gridX+tCardW*i+42, gridY+70+200, 35, 35);
-                            g.fillOval(gridX+tCardW*i+73, gridY+70+200, 35, 35);
-                            g.fillArc(gridX+tCardW*i+30, gridY+90+200, 90, 90, 51, 78);
-                        } else if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Ouros")) {
-                            polyX[0] = gridX+tCardW*i+75;
-                            polyX[1] = gridX+tCardW*i+50;
-                            polyX[2] = gridX+tCardW*i+75;
-                            polyX[3] = gridX+tCardW*i+100;
-                            polyY[0] = gridY+60+200;
-                            polyY[1] = gridY+100+200;
-                            polyY[2] = gridY+140+200;
-                            polyY[3] = gridY+100+200;
-                            g.fillPolygon(polyX, polyY, 4);
-                        } else if (Interface.dealerCards[i].getNaipe().toString().equalsIgnoreCase("Espadas")) {
-                            g.fillOval(gridX+tCardW*i+42, gridY+90+200, 35, 35);
-                            g.fillOval(gridX+tCardW*i+73, gridY+90+200, 35, 35);
-                            g.fillArc(gridX+tCardW*i+30, gridY+15+200, 90, 90, 51+180, 78);
-                            g.fillRect(gridX+tCardW*i+70, gridY+100+200, 10, 40);
-                        } else {
-                            g.fillOval(gridX+tCardW*i+40, gridY+90+200, 35, 35);
-                            g.fillOval(gridX+tCardW*i+75, gridY+90+200, 35, 35);
-                            g.fillOval(gridX+tCardW*i+58, gridY+62+200, 35, 35);
-                            g.fillRect(gridX+tCardW*i+70, gridY+75+200, 10, 70);
-                        }
-                    }
+                    iDealer++;
                 }
             }
+        }
+
+        private void drawCards(Graphics g, Carta c, int i, boolean isDealer) {
+            int dealerSpacing;
+            if (isDealer) {
+                dealerSpacing = 200;
+            } else {
+                dealerSpacing = 0;
+            }
+
+            if(isDealer && i == 0) {
+                g.setColor(Color.black);
+            } else {
+                g.setColor(Color.white);
+            }
+            g.fillRect(gridX+spacing+tCardW*i+rounding, gridY+spacing+dealerSpacing, cardW-rounding*2, cardH);
+            g.fillRect(gridX+spacing+tCardW*i, gridY+spacing+rounding+dealerSpacing, cardW, cardH-rounding*2);
+            g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+dealerSpacing, rounding*2, rounding*2);
+            g.fillOval(gridX+spacing+tCardW*i, gridY+spacing+cardH-rounding*2+dealerSpacing, rounding*2, rounding*2);
+            g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+dealerSpacing, rounding*2, rounding*2);
+            g.fillOval(gridX+spacing+tCardW*i+cardW-rounding*2, gridY+spacing+cardH-rounding*2+dealerSpacing, rounding*2, rounding*2);
+            if(!(isDealer && i == 0)) {
+                g.setFont(fontCard);
+                if (c.getNaipe().toString().equalsIgnoreCase("Copas") || c.getNaipe().toString().equalsIgnoreCase("Ouros")) {
+                    g.setColor(Color.red);
+                } else {
+                    g.setColor(Color.black);
+                }
+
+                g.drawString(c.getName(), gridX+spacing+tCardW*i+rounding, gridY+spacing+cardH-rounding+dealerSpacing);
+
+                if (c.getNaipe().toString().equalsIgnoreCase("Copas")) {
+                    g.fillOval(gridX+tCardW*i+42, gridY+70+dealerSpacing, 35, 35);
+                    g.fillOval(gridX+tCardW*i+73, gridY+70+dealerSpacing, 35, 35);
+                    g.fillArc(gridX+tCardW*i+30, gridY+90+dealerSpacing, 90, 90, 51, 78);
+                } else if (c.getNaipe().toString().equalsIgnoreCase("Ouros")) {
+                    polyX[0] = gridX+tCardW*i+75;
+                    polyX[1] = gridX+tCardW*i+50;
+                    polyX[2] = gridX+tCardW*i+75;
+                    polyX[3] = gridX+tCardW*i+100;
+                    polyY[0] = gridY+60+dealerSpacing;
+                    polyY[1] = gridY+100+dealerSpacing;
+                    polyY[2] = gridY+140+dealerSpacing;
+                    polyY[3] = gridY+100+dealerSpacing;
+                    g.fillPolygon(polyX, polyY, 4);
+                } else if (c.getNaipe().toString().equalsIgnoreCase("Espadas")) {
+                    g.fillOval(gridX+tCardW*i+42, gridY+90+dealerSpacing, 35, 35);
+                    g.fillOval(gridX+tCardW*i+73, gridY+90+dealerSpacing, 35, 35);
+                    g.fillArc(gridX+tCardW*i+30, gridY+15+dealerSpacing, 90, 90, 51+180, 78);
+                    g.fillRect(gridX+tCardW*i+70, gridY+100+dealerSpacing, 10, 40);
+                } else {
+                    g.fillOval(gridX+tCardW*i+40, gridY+90+dealerSpacing, 35, 35);
+                    g.fillOval(gridX+tCardW*i+75, gridY+90+dealerSpacing, 35, 35);
+                    g.fillOval(gridX+tCardW*i+58, gridY+62+dealerSpacing, 35, 35);
+                    g.fillRect(gridX+tCardW*i+70, gridY+75+dealerSpacing, 10, 70);
+                }
+            }
+
         }
     }
 }

@@ -1,29 +1,23 @@
+import java.util.ArrayList;
+
 public class Jogador {
 
     private String nome;
 
-    private Carta[] mao = new Carta[10];
+    private ArrayList<Carta> mao;
 
-    private int numeroCartas;
+    private double creditos;
+    private double aposta;
 
-    //TODO: Transformar Creditos e Aposta para double
-    private int creditos;
-    private int aposta;
-
-    public int getAposta() {
+    public double getAposta() {
         return aposta;
     }
 
-    public int getNumeroCartas() {
-        return numeroCartas;
-    }
-
-    public Carta[] getMao() {
+    public ArrayList<Carta> getMao() {
         return mao;
     }
 
-
-    public void setAposta(int aposta) {
+    public void setAposta(double aposta) {
         this.aposta = aposta;
     }
 
@@ -36,7 +30,7 @@ public class Jogador {
     }
 
     public void abandonarPartida(Jogador dealer) {
-        int aposta = this.aposta/2;
+        double aposta = this.aposta/2;
         this.creditos -= aposta;
         dealer.setCreditos(dealer.getCreditos() + aposta);
     }
@@ -51,28 +45,22 @@ public class Jogador {
         ganhador.setCreditos(ganhador.getCreditos() + this.aposta);
     }
 
-    public Jogador(String nome, int creditos) {
+    public Jogador(String nome, double creditos) {
         this.nome = nome;
         this.creditos = creditos;
+        this.mao = new ArrayList<>();
 
         this.esvaziaMao();
     }
 
     public void esvaziaMao() {
-        for(int c = 0; c < 10; c++) {
-            this.mao[c] = null;
+        if (!mao.isEmpty()) {
+            mao.clear();
         }
-        this.numeroCartas = 0;
     }
 
     public boolean addCarta(Carta carta) {
-        if(this.numeroCartas == 10) {
-            System.err.printf("A mão de %s já tem 10 cartas, não pode adicionar outra!\n", this.nome);
-            System.exit(1);
-        }
-
-        this.mao[this.numeroCartas] = carta;
-        this.numeroCartas++;
+        this.mao.add(carta);
 
         return (this.somaMao(true) <= 21);
     }
@@ -82,10 +70,11 @@ public class Jogador {
         int numeroCarta;
         int numeroAs = 0;
 
-        for(int c = 0; c < this.numeroCartas; c++) {
-            numeroCarta = this.mao[c].getNumero();
+        int cont = 0;
+        for(Carta c : mao) {
+            numeroCarta = c.getNumero();
 
-            if(!somaPrimeiraCarta && c == 0) {
+            if(!somaPrimeiraCarta && cont == 0) {
                 numeroCarta = 0;
             }
 
@@ -97,6 +86,8 @@ public class Jogador {
             } else {
                 somaMao += numeroCarta;
             }
+
+            cont++;
         }
 
         while (somaMao > 21 && numeroAs > 0) {
@@ -108,11 +99,11 @@ public class Jogador {
         return somaMao;
     }
 
-    public int getCreditos() {
+    public double getCreditos() {
         return creditos;
     }
 
-    public void setCreditos(int creditos) {
+    public void setCreditos(double creditos) {
         this.creditos = creditos;
     }
 }
