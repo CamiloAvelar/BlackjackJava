@@ -1,5 +1,3 @@
-//TODO: Adicionar validação nos campos
-
 public class ExecutaJogo implements Runnable {
 
     Interface UI = new Interface();
@@ -11,7 +9,9 @@ public class ExecutaJogo implements Runnable {
     @Override
     public void run(){
 
-        Baralho baralho = new Baralho(true);
+        SoundsPlayer.init();
+
+        Baralho baralho = new Baralho();
         String nome;
         double creditos, aposta;
 
@@ -32,11 +32,6 @@ public class ExecutaJogo implements Runnable {
             eu.esvaziaMao();
             dealer.esvaziaMao();
 
-            eu.addCarta(baralho.entregaCarta());
-            dealer.addCarta(baralho.entregaCarta());
-            eu.addCarta(baralho.entregaCarta());
-            dealer.addCarta(baralho.entregaCarta());
-
             creditos = eu.getCreditos();
             do{
                 aposta = Double.parseDouble(UI.openModal("aposta"));
@@ -44,10 +39,35 @@ public class ExecutaJogo implements Runnable {
 
             eu.setAposta(aposta);
 
+            baralho.montaBaralho(true);
+            try {
+                Thread.sleep(500);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             UI.showActionButtons();
 
+            eu.addCarta(baralho.entregaCarta());
+            dealer.addCarta(baralho.entregaCarta());
+            try {
+                UI.displayCards(eu, dealer, false);
+                Thread.sleep(500);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            eu.addCarta(baralho.entregaCarta());
+            dealer.addCarta(baralho.entregaCarta());
+            try {
+                UI.displayCards(eu, dealer, false);
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             UI.log("Cartas distribuidas!", dealer.getNome());
-            UI.displayCards(eu, dealer, false);
 
             boolean euAcabei = false;
             boolean dealerAcabou = false;
@@ -55,6 +75,7 @@ public class ExecutaJogo implements Runnable {
 
             while ((!euAcabei || !dealerAcabou)) {
                 UI.showTotal(eu.somaMao(true), dealer.somaMao(false), eu.getCreditos(), dealer.getCreditos(), eu.getAposta());
+                UI.displayCards(eu, dealer, false);
                 if(!euAcabei) {
                     UI.enableActionButtons();
                     switch (UI.getReturnButton()) {
@@ -124,12 +145,14 @@ public class ExecutaJogo implements Runnable {
                 if (minhaSoma > somaDealer && minhaSoma <= 21 || somaDealer > 21) {
                     eu.ganharAposta(dealer);
                     UI.log("Você ganhou!", eu.getNome());
+                    SoundsPlayer.WIN.play();
                 } else if (minhaSoma == somaDealer) {
                     eu.setAposta(0);
                     UI.log("Empatou", "");
                 } else {
                     eu.perderAposta(dealer);
                     UI.log("Dealer ganhou!", dealer.getNome());
+                    SoundsPlayer.LOSE.play();
                 }
 
                 UI.showTotal(minhaSoma, somaDealer, eu.getCreditos(), dealer.getCreditos(), eu.getAposta());

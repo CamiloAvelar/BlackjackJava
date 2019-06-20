@@ -1,3 +1,5 @@
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,6 +51,9 @@ public class Interface extends JFrame implements ActionListener{
     Font fontCard = new Font("Times New Roman", Font.PLAIN, 40);
     Font buttonFont = new Font("Times New Roman", Font.PLAIN, 30);
     Font fontLog = new Font("Times New Roman", Font.ITALIC, 30);
+    Font titleFont = new Font("Times New Roman", Font.PLAIN,  30);
+    Font infoFont = new Font("Times New Roman", Font.ITALIC, 25);
+    Font namesFont = new Font("Times New Roman", Font.PLAIN, 26);
 
     int[] polyX = new int[4];
     int[] polyY = new int[4];
@@ -73,7 +78,7 @@ public class Interface extends JFrame implements ActionListener{
         for (Botoes b: Botoes.values()){
             botoes.put(b.name(), new JButton());
 
-            botoes.get(b.name()).setText(b.name());
+            botoes.get(b.name()).setVisible(false);
             botoes.get(b.name()).setText(b.name());
             botoes.get(b.name()).setFont(buttonFont);
             botoes.get(b.name()).setBackground(buttonColor);
@@ -100,10 +105,12 @@ public class Interface extends JFrame implements ActionListener{
         }
 
         if(e.getSource() == botoes.get("Ficar")) {
+            SoundsPlayer.CLICK.play();
             Interface.returnButton = "ficar";
         }
 
         if(e.getSource() == botoes.get("Abandonar")) {
+            SoundsPlayer.CLICK.play();
             Interface.returnButton = "abandonar";
         }
 
@@ -112,12 +119,14 @@ public class Interface extends JFrame implements ActionListener{
         }
 
         if(e.getSource() == botoes.get("Sim")) {
+            SoundsPlayer.CLICK.play();
             Log.clear();
             Interface.playAgain = "S";
             repaint();
         }
 
         if(e.getSource() == botoes.get("Nao")) {
+            SoundsPlayer.CLICK.play();
             Interface.playAgain = "N";
         }
     }
@@ -126,7 +135,7 @@ public class Interface extends JFrame implements ActionListener{
         String text = "";
         switch (modalType) {
             case "nome":
-                String name = JOptionPane.showInputDialog(null,"Digite seu nome:", "Nome", JOptionPane.PLAIN_MESSAGE);
+                String name = StringUtils.capitalize(JOptionPane.showInputDialog(null,"Digite seu nome:", "Nome", JOptionPane.PLAIN_MESSAGE));
                 if(name == null) {
                     System.exit(0);
                 }
@@ -335,26 +344,37 @@ public class Interface extends JFrame implements ActionListener{
             if(Interface.showTotal) {
                 g.setColor(Color.black);
 
-                g.drawString("Pontos:", gridX+gridW+50, gridY+290);
-                g.drawString(Interface.playerName, gridX+gridW+50, gridY+320);
-                g.drawString("Dealer", gridX+gridW+210, gridY+320);
-                g.drawString(Integer.toString(Interface.myTotal), gridX+gridW+50, gridY+350);
-                g.drawString(Integer.toString(Interface.dealerTotal), gridX+gridW+210, gridY+350);
+                g.setFont(titleFont);
+                g.drawString("Pontos:", gridX+gridW+130, gridY+340);
+                g.setFont(namesFont);
+                g.drawString(Interface.playerName, gridX+gridW+50, gridY+370);
+                g.drawString("Dealer", gridX+gridW+210, gridY+370);
+                g.setFont(infoFont);
+                g.drawString(Integer.toString(Interface.myTotal), gridX+gridW+50, gridY+400);
+                g.drawString(Integer.toString(Interface.dealerTotal), gridX+gridW+210, gridY+400);
 
-                g.drawString("Saldo:", gridX+gridW+100, gridY+70);
-                g.drawString(Interface.playerName, gridX+gridW+50, gridY+100);
-                g.drawString("Dealer", gridX+gridW+50, gridY+165);
+                g.setFont(titleFont);
+                g.drawString("Saldo:", gridX+gridW+130, gridY+110);
+                g.setFont(namesFont);
+                g.drawString(Interface.playerName, gridX+gridW+50, gridY+140);
+                g.drawString("Dealer", gridX+gridW+50, gridY+205);
                 g.setColor(Color.green);
-                g.drawString("R$",gridX+gridW+50,gridY+130);
-                g.drawString(String.format("%.2f", Interface.meuSaldo), gridX+gridW+100, gridY+130);
-                g.drawString("R$", gridX+gridW+50, gridY+200);
-                g.drawString(String.format("%.2f", Interface.dealerSaldo), gridX+gridW+100, gridY+200);
+                g.setFont(infoFont);
+                g.drawString("R$",gridX+gridW+50,gridY+170);
+                g.drawString(String.format("%.2f", Interface.meuSaldo), gridX+gridW+100, gridY+170);
+                if(Interface.dealerSaldo < 0) {
+                    g.setColor(Color.red);
+                }
+                g.drawString("R$", gridX+gridW+50, gridY+240);
+                g.drawString(String.format("%.2f", Interface.dealerSaldo), gridX+gridW+100, gridY+240);
 
                 g.setColor(Color.black);
-                g.drawString("Aposta:", gridX+gridW+50, gridY);
+                g.setFont(titleFont);
+                g.drawString("Aposta:", gridX+gridW+130, gridY);
+                g.setFont(infoFont);
                 g.setColor(Color.red);
-                g.drawString("R$", gridX+gridW+165, gridY);
-                g.drawString(String.format("%.2f", Interface.aposta), gridX+gridW+205, gridY);
+                g.drawString("R$", gridX+gridW+50, gridY+30);
+                g.drawString(String.format("%.2f", Interface.aposta), gridX+gridW+100, gridY+30);
             }
 
             if(Interface.displayCards) {
@@ -429,7 +449,6 @@ public class Interface extends JFrame implements ActionListener{
                     g.fillRect(gridX+tCardW*i+70, gridY+75+dealerSpacing, 10, 70);
                 }
             }
-
         }
     }
 }

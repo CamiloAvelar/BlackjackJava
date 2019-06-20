@@ -5,8 +5,14 @@ import java.util.Collections;
 public class Baralho {
     private ArrayList<Carta> cartas;
 
-    public Baralho(boolean embaralhar) {
+    public Baralho() {
         this.cartas = new ArrayList<>();
+    }
+
+    public void montaBaralho(boolean embaralhar) {
+        if(!this.cartas.isEmpty()) {
+            cartas.clear();
+        }
 
         for(int naipe = 0; naipe < 4; naipe++){
 
@@ -22,13 +28,14 @@ public class Baralho {
 
     public void embaralha() {
         Collections.shuffle(cartas);
+        SoundsPlayer.SHUFFLE.play();
     }
 
     public Carta entregaCarta() {
         Carta topo = this.cartas.get(0);
 
         this.cartas.remove(0);
-
+        SoundsPlayer.DEAL.play();
         return topo;
     }
 
