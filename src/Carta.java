@@ -3,6 +3,9 @@ public class Carta {
     private Naipes naipe;
     private int numero;
 
+    /* Construtor das cartas,
+    realiza a verificação do range correto dos números
+     */
     public Carta(Naipes naipe, int numero) {
         this.naipe = naipe;
 
@@ -50,6 +53,7 @@ public class Carta {
         this.numero = numero;
     }
 
+    // Sobrescreve o método toString para a exibição correta das cartas, para debug.
     public String toString() {
         String numStr = "Err";
 

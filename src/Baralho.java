@@ -5,10 +5,15 @@ import java.util.Collections;
 public class Baralho {
     private ArrayList<Carta> cartas;
 
+    // Construtor do baralho, inicia o array de cartas
     public Baralho() {
         this.cartas = new ArrayList<>();
     }
 
+    /* Cria o baralho, recebe embaralhar como parâmetro, que já cria o baralho embaralhado
+            Tem um for dentro de um for, criando todas as cartas de um mesmo naipe, depois de outro,
+            utilizando o ENUM de 'Naipes(Naipes.values()[naipe]'.
+     */
     public void montaBaralho(boolean embaralhar) {
         if(!this.cartas.isEmpty()) {
             cartas.clear();
@@ -26,11 +31,16 @@ public class Baralho {
         }
     }
 
+    // Embaralha o ArrayList e executa o som de embaralhamento.
     public void embaralha() {
         Collections.shuffle(cartas);
         SoundsPlayer.SHUFFLE.play();
     }
 
+    /*  Retorna a primeira carta do baralho depois
+        deleta a primeira carta do baralho,
+        executando o som de entrega de carta;
+     */
     public Carta entregaCarta() {
         Carta topo = this.cartas.get(0);
 
@@ -39,6 +49,7 @@ public class Baralho {
         return topo;
     }
 
+    // Printa o baralho, para debug.
     public void printBaralho() {
         System.out.println(this.cartas);
     }

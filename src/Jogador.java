@@ -9,20 +9,12 @@ public class Jogador {
     private double creditos;
     private double aposta;
 
-    public double getAposta() {
-        return aposta;
-    }
+    public Jogador(String nome, double creditos) {
+        this.nome = nome;
+        this.creditos = creditos;
+        this.mao = new ArrayList<>();
 
-    public ArrayList<Carta> getMao() {
-        return mao;
-    }
-
-    public void setAposta(double aposta) {
-        this.aposta = aposta;
-    }
-
-    public String getNome() {
-        return nome;
+        this.esvaziaMao();
     }
 
     public void dobraAposta() {
@@ -43,14 +35,6 @@ public class Jogador {
     public void perderAposta(Jogador ganhador) {
         this.creditos -= this.aposta;
         ganhador.setCreditos(ganhador.getCreditos() + this.aposta);
-    }
-
-    public Jogador(String nome, double creditos) {
-        this.nome = nome;
-        this.creditos = creditos;
-        this.mao = new ArrayList<>();
-
-        this.esvaziaMao();
     }
 
     public void esvaziaMao() {
@@ -99,11 +83,24 @@ public class Jogador {
         return somaMao;
     }
 
+    public void setAposta(double aposta) {
+        this.aposta = aposta;
+    }
+    public double getAposta() {
+        return aposta;
+    }
+
     public double getCreditos() {
         return creditos;
     }
-
     public void setCreditos(double creditos) {
         this.creditos = creditos;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+    public ArrayList<Carta> getMao() {
+        return mao;
     }
 }

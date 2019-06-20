@@ -1,6 +1,12 @@
 import java.io.*;
 import javax.sound.sampled.*;
 
+/* Enum que auxilia na execução
+nos sons do game:
+    Para adicionar um som basta um campo no ENUM com o parâmetro da localização do .wav do som
+    Para executar o som basta chamar SoundsPlayer.NOMEDOSOM.play();
+ */
+
 public enum SoundsPlayer {
     DEAL("sounds/deal.wav"),
     WIN("sounds/win.wav"),
@@ -14,19 +20,19 @@ public enum SoundsPlayer {
 
     public static Volume volume = Volume.LOW;
 
-    // Each sound effect has its own clip, loaded with its own sound file.
+    // Cada som é guardado em seu próprio clip.
     private Clip clip;
 
-    // Constructor to construct each element of the enum with its own sound file.
+    // Construtor que coloca cada elemento do enum em seu próprio arquivo de som;
     SoundsPlayer(String soundFileName) {
         try {
-            // Use URL (instead of File) to read from disk and JAR.
+            // Lê o arquivo do HD.
             InputStream url = this.getClass().getClassLoader().getResourceAsStream(soundFileName);
-            // Set up an audio input stream piped from the sound file.
+            // Seta o AudioInputStream
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
-            // Get a clip resource.
+            // Pega os recursos do clip
             clip = AudioSystem.getClip();
-            // Open audio clip and load samples from the audio input stream.
+            // Abre o clip e carrega os exemplos do AudioInputStream
             clip.open(audioInputStream);
         } catch (UnsupportedAudioFileException e) {
             e.printStackTrace();
@@ -37,17 +43,17 @@ public enum SoundsPlayer {
         }
     }
 
-    // Play or Re-play the sound effect from the beginning, by rewinding.
+    // Executa o som
     public void play() {
         if (volume != Volume.MUTE) {
             if (clip.isRunning())
-                clip.stop();   // Stop the player if it is still running
-            clip.setFramePosition(0); // rewind to the beginning
-            clip.start();     // Start playing
+                clip.stop();   // Para o som caso ele esteja tocando.
+            clip.setFramePosition(0); // Volta para o início
+            clip.start();     // Começa a tocar
         }
     }
 
     public static void init() {
-        values(); // calls the constructor for all the elements
+        values(); // chama o construtor de todos os elementos
     }
 }

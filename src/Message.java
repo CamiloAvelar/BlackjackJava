@@ -1,7 +1,8 @@
+// Classe para exibição de mensagens no layout.
 public class Message {
 
-    String message = "empty_for_now";
-    String who = "nobody_for_now";
+    String message;
+    String who;
 
     public Message(String m, String w) {
         this.message = m;

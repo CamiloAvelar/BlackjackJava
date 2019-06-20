@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 public class Interface extends JFrame implements ActionListener{
 
+    // Variáveis que auxiliam no tamanho dos objetos
     int width = 1280;
     int height = 800;
 
@@ -17,8 +18,10 @@ public class Interface extends JFrame implements ActionListener{
     int gridW = 900;
     int gridH = 400;
 
+    // Map que guarda os botões, com a key sendo o nome vindo do ENUM Botoes
     private Map<String, JButton> botoes = new HashMap<String, JButton>();
 
+    // Atributos que guardam informações para exibir na interface
     private static boolean showTotal = false;
     private static int myTotal;
     private static int dealerTotal;
@@ -34,19 +37,21 @@ public class Interface extends JFrame implements ActionListener{
     private static boolean displayCards = false;
     private static boolean showFirstCard = false;
 
-    private static String returnButton = "none";
-    private static String playAgain = "none";
+    private static String returnButton = "";
+    private static String playAgain = "";
     private static boolean showPlayAgain = false;
 
     Board board = new Board();
 
+    // Array que guarda os logs que serão exibidos na interface
     ArrayList<Message> Log = new ArrayList<Message>();
 
+    // Variáveis de estilização (Cor e fontes)
     Color backgroundColor = new Color(39, 119,20);
     Color infoColor = new Color(29,150,20);
     Color buttonColor = new Color(204,204,0);
     Color cDealer = Color.red;
-    Color cPlayer = new Color(25,55,255);
+    Color cPlayer = new Color(78, 105,255);
 
     Font fontCard = new Font("Times New Roman", Font.PLAIN, 40);
     Font buttonFont = new Font("Times New Roman", Font.PLAIN, 30);
@@ -66,6 +71,7 @@ public class Interface extends JFrame implements ActionListener{
     int cardW = tCardW - spacing*2;
     int cardH = tCardH - spacing*2;
 
+    // Construtor da interface, onde são setadas as configurações, criados os botões e suas funções
     public Interface() {
         this.setSize(width, height + 29);
         this.setTitle("Blackjack");
@@ -75,6 +81,9 @@ public class Interface extends JFrame implements ActionListener{
         this.setContentPane(board);
         this.setLayout(null);
 
+        /*  Cria os botões, adicionando ao Map, com a key o valor do ENUM Botoes e como value o JButton
+            Para recuperar o botão basta dar um botoes.get(NOME), é assim que são setadas as suas configurações no loop
+         */
         for (Botoes b: Botoes.values()){
             botoes.put(b.name(), new JButton());
 
@@ -90,6 +99,7 @@ public class Interface extends JFrame implements ActionListener{
         this.setButtonsSize();
     }
 
+    // Função para setar as posições e tamanhos dos botões
     public void setButtonsSize() {
         this.botoes.get("Pegar").setBounds(970, 530,300,50);
         this.botoes.get("Ficar").setBounds(970, 600,300,50);
@@ -99,6 +109,11 @@ public class Interface extends JFrame implements ActionListener{
         this.botoes.get("Nao").setBounds(1140, 560,120,60);
     }
 
+    /*  Configura as ações dos botões
+            Como a lógica principal fica no ExecutaJogo,
+            os botões tem como função apenas retornar o tipo do botão apertado,
+            para o ExecutaJogo executar o bloco correto de código
+     */
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == botoes.get("Pegar")) {
             Interface.returnButton = "pegar";
@@ -131,6 +146,10 @@ public class Interface extends JFrame implements ActionListener{
         }
     }
 
+    /*  Função para abrir a caixa de digitação,
+        recebe o tipo de caixa que deseja  e retorna o valor digitado na caixa,
+        faz também a verificação para o formato correto digitado
+    */
     public String openModal(String modalType) {
         String text = "";
         switch (modalType) {
@@ -196,32 +215,34 @@ public class Interface extends JFrame implements ActionListener{
         return text;
     }
 
-    public void disablePegar() {
-        botoes.get("Pegar").setEnabled(false);
-    }
-
+    // Retorna o valor do botão apertado, é a String que retorna para o ExecutaJogo
     public String getReturnButton () {
         return Interface.returnButton;
     }
 
-    public void resetReturn() {
-        Interface.returnButton = "none";
-    }
-
-    public void resetPlayAgain() {
-        Interface.playAgain = "none";
-    }
-
+    // Retorna para o ExecutaJogo se o usuáro irá jogar novamente
     public String playAgain () {
         return Interface.playAgain;
     }
 
+    // Reseta o valor da variável de retorno
+    public void resetReturn() {
+        Interface.returnButton = "none";
+    }
+
+    // Reseta o valor da variável de retorno do playAgain
+    public void resetPlayAgain() {
+        Interface.playAgain = "none";
+    }
+
+    // Esconde todos os botões
     public void hideAllButtons() {
         for(Botoes b: Botoes.values()) {
             botoes.get(b.name()).setVisible(false);
         }
     }
 
+    // Esconde apenas os botões de ação (pegar, ficar, ..);
     public void hideActionButtons() {
         for(Botoes b: Botoes.values()) {
             if(b.getAction()) {
@@ -230,30 +251,7 @@ public class Interface extends JFrame implements ActionListener{
         }
     }
 
-    public void disableActionButtons() {
-        for(Botoes b: Botoes.values()) {
-            if(b.getAction()) {
-                botoes.get(b.name()).setEnabled(false);
-            }
-        }
-    }
-
-    public void enableActionButtons() {
-        for(Botoes b: Botoes.values()) {
-            if(b.getAction()) {
-                botoes.get(b.name()).setEnabled(true);
-            }
-        }
-    }
-
-    public void showActionButtons() {
-        for(Botoes b: Botoes.values()) {
-            if(b.getAction()) {
-                botoes.get(b.name()).setVisible(true);
-            }
-        }
-    }
-
+    // Esconde apenas o botões de JogarNovamente
     public void hidePlayAgainButtons() {
         for(Botoes b: Botoes.values()) {
             if(!b.getAction()) {
@@ -263,6 +261,16 @@ public class Interface extends JFrame implements ActionListener{
         Interface.showPlayAgain = false;
     }
 
+    // Desativa os botões de ação
+    public void disableActionButtons() {
+        for(Botoes b: Botoes.values()) {
+            if(b.getAction()) {
+                botoes.get(b.name()).setEnabled(false);
+            }
+        }
+    }
+
+    // Ativa os botões de jogar novamente
     public void enablePlayAgainButtons() {
         for(Botoes b: Botoes.values()) {
             if(!b.getAction()) {
@@ -270,10 +278,27 @@ public class Interface extends JFrame implements ActionListener{
             }
         }
         Interface.showPlayAgain = true;
-
-        repaint();
     }
 
+    // Ativa os botões de ação (pegar, ficar, ...)
+    public void enableActionButtons() {
+        for(Botoes b: Botoes.values()) {
+            if(b.getAction()) {
+                botoes.get(b.name()).setEnabled(true);
+            }
+        }
+    }
+
+    // Mostra os botões de ação
+    public void showActionButtons() {
+        for(Botoes b: Botoes.values()) {
+            if(b.getAction()) {
+                botoes.get(b.name()).setVisible(true);
+            }
+        }
+    }
+
+    // Adiciona uma mensagem ao Log, para mostrar na interface
     public void log(String message, String who) {
         if(Log.size() > 7){
             Log.remove(0);
@@ -283,6 +308,7 @@ public class Interface extends JFrame implements ActionListener{
         repaint();
     }
 
+    // Recebe os parâmetros do ExecutaJogo para mostrar na interface
     public void showTotal(int myTotal, int dealerTotal, double meuSaldo, double dealerSaldo, double aposta) {
         Interface.showTotal = true;
         Interface.myTotal = myTotal;
@@ -292,26 +318,30 @@ public class Interface extends JFrame implements ActionListener{
         Interface.dealerSaldo = dealerSaldo;
 
         Interface.aposta = aposta;
-        repaint();
     }
 
+    // Esconde os valores na interface
     public void hideTotal() {
         Interface.showTotal = false;
     }
 
+    // Atualiza a interface mostrando as cartas
     public void displayCards(Jogador eu, Jogador dealer, boolean showFirstCard) {
         Interface.myCards = eu.getMao();
         Interface.dealerCards = dealer.getMao();
 
         Interface.displayCards = true;
         Interface.showFirstCard = showFirstCard;
+
         repaint();
     }
 
+    // Atualiza a interface escondendo todas as cartas
     public void hideCards() {
         Interface.displayCards = false;
     }
 
+    // Classe que desenha no Board
     public class Board extends JPanel {
         public void paintComponent(Graphics g) {
             g.setColor(backgroundColor);
@@ -323,7 +353,7 @@ public class Interface extends JFrame implements ActionListener{
             g.setColor(infoColor);
             g.fillRect(980,10,285,480);
 
-            // WRITE LOGS
+            // Faz um loop los Logs e mostram na interface
             g.setFont(fontLog);
             int logIndex = 0;
             for (Message L : Log) {
@@ -336,11 +366,13 @@ public class Interface extends JFrame implements ActionListener{
                 logIndex++;
             }
 
+            // Mostra a opção de jogar novamente se a variável estiver true
             if(Interface.showPlayAgain) {
                 g.setColor(Color.black);
                 g.drawString("Jogar novamente?", 990,550);
             }
 
+            // Mostra as informações na interface se a variável estiver true
             if(Interface.showTotal) {
                 g.setColor(Color.black);
 
@@ -377,16 +409,19 @@ public class Interface extends JFrame implements ActionListener{
                 g.drawString(String.format("%.2f", Interface.aposta), gridX+gridW+100, gridY+30);
             }
 
+            // Mostra as cartas de a variável estiver true
             if(Interface.displayCards) {
-                //player cards
+                // Mostra as cartas do jogador
                 int i = 0;
                 for (Carta c : myCards) {
+                    // Função que desenha as cartas
                     drawCards(g, c, i, false);
                     i++;
                 }
-                 //dealer cards
+                 // Mostra as cartas do dealer
                 int iDealer = 0;
                 for (Carta c : dealerCards) {
+                    // Função que desenha as cartas
                     drawCards(g, c, iDealer, true);
 
                     iDealer++;
@@ -394,6 +429,7 @@ public class Interface extends JFrame implements ActionListener{
             }
         }
 
+        // Função que contém informações para desenhar as cartas
         private void drawCards(Graphics g, Carta c, int i, boolean isDealer) {
             int dealerSpacing;
             if (isDealer) {
