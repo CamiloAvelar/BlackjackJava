@@ -4,6 +4,8 @@
 
 ### Diagrama UML
 
+![diagramaUML](BlackJack.png "Diagrama UML")
+
 ### Explicação do projeto e suas estruturas
 
 - Classes
