@@ -318,6 +318,8 @@ public class Interface extends JFrame implements ActionListener{
         Interface.dealerSaldo = dealerSaldo;
 
         Interface.aposta = aposta;
+
+        repaint();
     }
 
     // Esconde os valores na interface
